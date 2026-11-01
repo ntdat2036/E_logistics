@@ -191,11 +191,34 @@
   1. Viết script thực thi tự động toàn bộ 21 bước tuần tự [`run_pipeline.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/run_pipeline.py):
      - Tự động gọi lần lượt Data prep & Audit (1-6) $\rightarrow$ Leakage Audit (7-10) $\rightarrow$ Synth inventory & FEFO $\rightarrow$ Evaluate 7 baselines (11-13) $\rightarrow$ Hyperparameter GridSearch & Khóa ngưỡng (14-17) $\rightarrow$ Bootstrap CI, Error analysis, Explainability (18-20) $\rightarrow$ Queue Simulation As-Is vs To-Be (21) $\rightarrow$ Export Web Assets $\rightarrow$ Chạy Pytest toàn diện.
      - In bảng tổng kết nghiệm thu so khớp tự động với các chỉ số mục tiêu trong Mục 4.9.
-  2. Viết script tạo báo cáo Jupyter Notebook tự động [`build_notebook.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/build_notebook.py) bằng thư viện `nbformat`:
-     - Tạo tệp [`notebook.ipynb`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/notebook.ipynb) gồm 22 cells hoàn chỉnh từ cấu trúc dữ liệu, công thức toán học LaTeX, đồ thị phân tích đến kết luận kiến nghị.
+  2. Viết script tạo báo cáo Jupyter Notebook tự động [`build_notebook.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/build_notebook.py) bằng thư viện `nbformat`.
   3. Hoàn thiện tài liệu [`README.md`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/README.md) chi tiết:
      - Tóm tắt đề tài, cấu trúc thư mục, quy tắc bắt buộc R1–R7, bảng kết quả 7 mô hình, hướng dẫn tái lập 1 lệnh, checklist nghiệm thu Mục 9.2, giới hạn nghiên cứu Mục 11 và danh mục sửa đề cương Word Mục 12.
   4. Cập nhật và đóng gói toàn bộ nhật ký [`AI_USAGE_LOG.md`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/AI_USAGE_LOG.md).
   5. Thực thi chạy lại toàn bộ pipeline `python run_pipeline.py` từ đầu để xác nhận tính tái lập tuyệt đối (Rule R7).
 - **Trạng thái:** Hoàn thành 100% toàn bộ 7 giai đoạn của đồ án.
+
+---
+
+### Giai đoạn Hoàn Thiện Notebook: Chuẩn Hóa `notebook.ipynb` 21 Bước Theo Khuôn 4 Repo Tham Khảo
+- **Thời gian:** 2026-11-02
+- **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10 (Yêu cầu viết notebook chuyên sâu theo prompt CK10 Olist Decision Tree)
+- **Nội dung thực hiện bởi AI:**
+  1. Tạo module alias [`src/np_tree.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/np_tree.py) xuất các lớp `DecisionTree`, `BinMapper`, `Node` từ `src/model.py` để notebook import tự nhiên theo đúng yêu cầu đề bài.
+  2. Xây dựng trình sinh tự động [`generate_complete_notebook.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/generate_complete_notebook.py) tạo ra [`notebook.ipynb`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/notebook.ipynb) đạt chuẩn 100% theo quy cách 4 repo tham khảo (LogR, KNN, HGB, K-Means):
+     - **Tiêu đề lớn duy nhất** ở đầu notebook (`# DỰ ĐOÁN NGUY CƠ TRỄ HẠN BÀN GIAO ĐƠN HÀNG TRONG KHO E-LOGISTICS BẰNG THUẬT TOÁN DECISION TREE THUẦN NUMPY`).
+     - **Đúng 21 mục tuần tự**, mỗi mục có tiêu đề dạng `## BƯỚC n: TÊN TIẾNG VIỆT (ENGLISH TERM)`.
+     - **Cấu trúc 3 thành phần chuẩn mực cho mỗi bước:** (1) Markdown mở đầu (mục tiêu, lý do, công thức LaTeX $...$, 3–6 gạch đầu dòng), (2) Code cell thực thi (in số liệu có viền bảng `=` / `-`, vẽ hình đa panel chuẩn màu sắc và chú thích), (3) Markdown nhận xét thực nghiệm (phân tích số liệu cụ thể, không nói chung chung).
+     - **Lưu sẵn 100% outputs và hình ảnh** nhúng trực tiếp dạng base64 PNG trong file `.ipynb`, mở file ra là xem được toàn bộ kết quả mà không cần chạy lại kernel.
+     - **28 hình ảnh chất lượng cao** ($\ge 25$ hình theo kỳ vọng) được nhúng và đồng thời lưu vào thư mục `reports/figures/` (`buoc_01_*.png` đến `buoc_21_*.png`) sẵn sàng cho việc chèn vào báo cáo Word.
+     - Mọi hình ảnh từ dữ liệu mô phỏng hàng đợi kho đều được gắn nhãn minh bạch `(DỮ LIỆU MÔ PHỎNG)`.
+     - **Bảng tổng kết 21 bước** dạng DataFrame ở cuối notebook hiển thị đầy đủ Bước, Tên tiếng Anh, Việc đã làm, và Kết quả nghiệm thu chính.
+     - **Mục Khả năng tái lập** ghi rõ môi trường, hạt giống `SEED = 42`, phiên bản thư viện, và lệnh tái lập 1 dòng.
+     - **Cell demo suy luận cuối cùng:** Nạp trọng số từ `weights/tree.json` và `weights/thresholds.json`, kiểm tra tính nhất quán (sai khác $= 0.0$), và thực hiện suy luận dự đoán mức độ ưu tiên P1/P2/P3 cho 3 đơn hàng mới in dạng Banner trực quan.
+  3. Kiểm định chất lượng:
+     - `nbformat.validate`: PASS 100%.
+     - Số lượng cells: 69 cells (24 code cells, 45 markdown cells). 0 cell rỗng kết quả.
+     - Toàn bộ test suite `pytest tests/`: 30 passed, 1 skipped.
+- **Trạng thái:** Hoàn tất nghiệm thu toàn diện.
+
 
