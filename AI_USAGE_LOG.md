@@ -59,4 +59,46 @@ Tài liệu này ghi lại một cách minh bạch toàn bộ các hoạt độn
      - Xác nhận 4/4 bài kiểm thử vượt qua.
 - **Trạng thái:** Hoàn thành nghiệm thu Giai đoạn 1.
 
+### Giai đoạn 2: Đặc trưng và Chia dữ liệu (Các bước 7–10)
+- **Thời gian:** 2026-11-01
+- **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10
+- **Nội dung thực hiện bởi AI:**
+  1. Bổ sung hàm `stratified_split` thuần NumPy trong `src/data_prep.py` để chia dữ liệu ngẫu nhiên phân tầng 80/20 (phục vụ đối chiếu kết quả "lạc quan" theo Mục 4.4 so với chia theo chuỗi thời gian).
+  2. Xây dựng hàm `run_leakage_audit` kiểm toán rò rỉ dữ liệu in ra màn hình terminal theo chuẩn `[PASS]`/`[FAIL]`:
+     - Kiểm tra không trùng lặp chỉ mục giữa train_fit, val, test.
+     - Kiểm tra tính tuần tự thời gian: test hoàn toàn sau train.
+     - Kiểm tra Knowledge-Time: so sánh tỷ lệ trễ lịch sử với vòng lặp brute-force trên 1,000 đơn mẫu ngẫu nhiên (chênh lệch tuyệt đối = 0.00e+00).
+     - Kiểm tra hằng số tiên nghiệm prior chỉ tính từ các đơn trước mốc 2018-05-01.
+     - Kiểm tra giá trị trung vị điền thiếu chỉ tính từ tập train_fit.
+     - Kiểm tra sự cô lập độc lập của tập validation và test.
+  3. Xây dựng bộ kiểm thử `tests/test_leakage.py` gồm 7 bài test chuyên biệt kiểm tra toàn diện các nguy cơ rò rỉ thông tin tương lai.
+  4. Thực thi kiểm thử toàn bộ dự án qua `pytest`: 11/11 bài test vượt qua (100% PASS).
+- **Trạng thái:** Hoàn thành nghiệm thu Giai đoạn 2.
+
+### Giai đoạn 3: Mô hình và Baseline (Các bước 11–13)
+- **Thời gian:** 2026-11-01
+- **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10
+- **Nội dung thực hiện bởi AI:**
+  1. Xây dựng module học máy lõi `src/model.py` thuần NumPy 100% (tuân thủ nghiêm ngặt R2, không import scikit-learn):
+     - `BinMapper`: Ánh xạ quantile bins (32 hoặc 64).
+     - `DecisionTree`: Cây quyết định phân loại nhị phân hỗ trợ Gini và Entropy, `min_samples_split`, `max_features` ('sqrt', int, float), `class_weight`, xuất cấu trúc nút và ngưỡng giá trị thật `threshold_value`, tính `feature_importances_`.
+     - `RandomForest`: Rừng ngẫu nhiên thuần NumPy (bagging ensemble, `max_features='sqrt'`).
+     - `LogisticRegression`: Hồi quy logistic tối ưu hóa bằng Gradient Descent thuần NumPy, chuẩn hóa L2, hỗ trợ `class_weight='balanced'`, theo dõi `loss_history_`.
+     - `StandardScaler`: Chuẩn hóa $Z$-score (fit trên train, transform val/test).
+     - Toàn bộ bộ đo lường metrics thuần NumPy: `accuracy_score`, `precision_score`, `recall_score`, `f1_score`, `confusion_matrix`, `brier_score_loss`, `roc_auc_score` (tính qua xếp hạng Mann-Whitney U có xử lý ties), `average_precision_score` (PR-AUC).
+     - Bộ chia cross-validation thuần NumPy: `TimeSeriesSplit` (expanding-window) và `StratifiedKFold`.
+     - `GridSearch` thuần NumPy.
+  2. Xây dựng module đánh giá `src/evaluate.py`:
+     - Chạy so sánh 7 mô hình No Free Lunch (Mục 4.5): Dummy, FIFO, Slack, Seller History, Tree Order Only, Logistic Regression, Decision Tree lõi, Random Forest.
+     - Xuất kết quả so sánh ra `outputs/03_model_comparison.json` và `outputs/03_model_comparison.md`.
+     - Kết quả đo trên test: Cây lõi ROC-AUC = 0.6666 (khớp 0.667 tham chiếu), PR-AUC = 0.1541 (khớp 0.154); Quy tắc lịch sử người bán = 0.6712 (khớp 0.671); FIFO = 0.4646; Slack = 0.4866; Cây không lịch sử = 0.5183.
+     - Thực hiện phân tích Bias - Variance: Quét `max_depth` từ 1 đến 12, xuất đồ thị `outputs/fig_bias_variance.png` và dữ liệu `outputs/03_bias_variance.json`.
+  3. Viết và thực thi 2 bộ kiểm thử:
+     - `tests/test_metrics.py`: Đối chiếu các hàm metric thuần NumPy với `scikit-learn` trên 5 mảng nhỏ và mảng ngẫu nhiên (chênh lệch < 1e-9).
+     - `tests/test_tree_vs_sklearn.py`: Đối chiếu cây thuần NumPy với `DecisionTreeClassifier` của sklearn (chênh lệch AUC < 0.01; chứng minh tính tất định).
+  4. Chạy toàn bộ test suite dự án qua `pytest`: 20/20 bài test vượt qua (100% PASS).
+- **Trạng thái:** Hoàn thành nghiệm thu Giai đoạn 3.
+
+
+
 

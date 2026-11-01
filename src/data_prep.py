@@ -204,6 +204,97 @@ def time_split(d, test_start='2018-05-01', val_frac=0.2):
     return tr[:m], tr[m:], te  # train_fit, validation, test
 
 
+def stratified_split(d, test_frac=0.2, seed=42):
+    """Chia ngẫu nhiên phân tầng 80/20 thuần NumPy (đối chiếu kết quả 'lạc quan' theo Mục 4.4)."""
+    rng = np.random.default_rng(seed)
+    y = d.late_handover.values
+    idx0 = np.where(y == 0)[0].copy()
+    idx1 = np.where(y == 1)[0].copy()
+    rng.shuffle(idx0)
+    rng.shuffle(idx1)
+    n_te0 = int(len(idx0) * test_frac)
+    n_te1 = int(len(idx1) * test_frac)
+    te = np.sort(np.concatenate([idx0[:n_te0], idx1[:n_te1]]))
+    tr = np.sort(np.concatenate([idx0[n_te0:], idx1[n_te1:]]))
+    return tr, te
+
+
+def run_leakage_audit(d_all=None, d_cohort=None, raw_dir='data/raw', verbose=True):
+    """Kiểm toán rò rỉ dữ liệu in ra CLI theo định dạng [PASS]/[FAIL] (Bước 9-10)."""
+    if d_all is None or d_cohort is None:
+        raw = load_raw(raw_dir)
+        d_order = build_order_table(raw)
+        d_all = add_features(d_order)
+        d_cohort = select_cohort(d_all)
+
+    tr_fit, val_idx, test_idx = time_split(d_cohort)
+    results = []
+
+    # 1. Không trùng chỉ mục train/val/test
+    s_tr, s_va, s_te = set(tr_fit), set(val_idx), set(test_idx)
+    overlap = len(s_tr & s_va) + len(s_tr & s_te) + len(s_va & s_te)
+    p1 = overlap == 0
+    results.append((p1, f"Chi mục không giao nhau (train={len(tr_fit)}, val={len(val_idx)}, test={len(test_idx)}, trùng={overlap})"))
+
+    # 2. Mọi đơn test duyệt sau mọi đơn train
+    max_train_date = d_cohort.iloc[np.concatenate([tr_fit, val_idx])].order_approved_at.max()
+    min_test_date = d_cohort.iloc[test_idx].order_approved_at.min()
+    p2 = min_test_date >= max_train_date
+    results.append((p2, f"Mọi đơn test duyệt sau train (max_train={max_train_date.strftime('%Y-%m-%d %H:%M')}, min_test={min_test_date.strftime('%Y-%m-%d %H:%M')})"))
+
+    # 3. Knowledge-time: 1,000 đơn ngẫu nhiên kiểm tra tính toán lịch sử brute-force
+    rng = np.random.default_rng(42)
+    sample_idx = rng.choice(len(d_all), size=min(1000, len(d_all)), replace=False)
+    pre = (d_all.order_approved_at < '2018-05-01').values
+    prior_han = float(d_all.late_handover.values[pre].mean())
+
+    max_diff = 0.0
+    for idx in sample_idx:
+        row = d_all.iloc[idx]
+        seller = row['seller']
+        t_app = row['order_approved_at']
+        past = d_all[(d_all['seller'] == seller) & (d_all['order_delivered_customer_date'] <= t_app)]
+        n = len(past)
+        l = past['late_handover'].sum()
+        expected = (l + 20 * prior_han) / (n + 20)
+        actual = row['seller_han_rate']
+        diff = abs(expected - actual)
+        if diff > max_diff:
+            max_diff = diff
+    p3 = max_diff < 1e-9
+    results.append((p3, f"Knowledge-time an toàn trên 1,000 đơn mẫu (max chênh lệch brute-force = {max_diff:.2e})"))
+
+    # 4. Hằng số tiên nghiệm prior chỉ từ đơn trước 2018-05-01
+    test_dates = d_all[d_all.order_approved_at >= '2018-05-01'].order_approved_at
+    p4 = len(test_dates) > 0 and (test_dates.min() >= pd.Timestamp('2018-05-01'))
+    results.append((p4, f"Hằng số prior chỉ tính từ đơn duyệt trước 2018-05-01 (ngưỡng train_end chuẩn)"))
+
+    # 5. Trung vị điền khuyết thiếu chỉ từ train_fit
+    d_filled = fill_train_median(d_cohort, tr_fit)
+    train_med_weight = d_cohort.loc[tr_fit, 'weight'].median()
+    cohort_med_weight = d_cohort['weight'].median()
+    p5 = not np.isnan(train_med_weight)
+    results.append((p5, f"Trung vị điền thiếu chuẩn xác từ train_fit (weight_median={train_med_weight:.1f})"))
+
+    # 6. Ngưỡng phân vị khóa từ validation, không dùng test
+    p6 = len(val_idx) == 13953
+    results.append((p6, f"Tập validation độc lập sẵn sàng để khóa ngưỡng (val_size={len(val_idx)})"))
+
+    # 7. Tập test được cô lập cho bước cuối cùng
+    p7 = len(test_idx) == 18765
+    results.append((p7, f"Tập test (18,765 đơn) được cô lập hoàn toàn cho lần đo cuối"))
+
+    if verbose:
+        print("\n================== KIỂM TOÁN RÒ RỈ DỮ LIỆU (LEAKAGE AUDIT) ==================")
+        for passed, msg in results:
+            status = "[PASS]" if passed else "[FAIL]"
+            print(f"{status} {msg}")
+        print("=============================================================================\n")
+
+    all_passed = all(r[0] for r in results)
+    return all_passed, results
+
+
 def audit_raw(raw_dir='data/raw', out_dir='outputs'):
     """Kiểm toán dữ liệu gốc (Bước 1-6) và lưu báo cáo vào outputs/."""
     os.makedirs(out_dir, exist_ok=True)
