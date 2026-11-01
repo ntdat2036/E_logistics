@@ -1,0 +1,13 @@
+# Core scientific computing (Mục 2 - R2: ML lõi viết thuần NumPy)
+numpy==2.5.4
+pandas==3.1.0
+matplotlib==3.11.2
+
+# Notebook generation (Giai đoạn 7)
+nbformat>=5.9.0
+jupyter>=1.0.0
+
+# Testing & Verification (scikit-learn CHỈ dùng để đối chiếu trong tests/ theo R2)
+pytest>=8.0.0
+scikit-learn==1.9.1
+

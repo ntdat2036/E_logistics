@@ -1,0 +1,289 @@
+{
+  "sha256": {
+    "olist_customers_dataset.csv": "983a422239e1712ded753b3bf9ecf47dc73f144d306029dcfa99e70a226883d2",
+    "olist_order_items_dataset.csv": "0bc4d068c4fe38cbb01bd90e8746e3c613fe7b4baef75fab7b0e329701c3e279",
+    "olist_orders_dataset.csv": "8df58ef3d2d7e9944010f7beecd9b75367f5588ec6e3c91cec19ae3345ef9ecf",
+    "olist_products_dataset.csv": "3e6569628a17fbc75fd206ee357b59e20364b9afa90f5b6cd5b4d624c58aa9cc",
+    "olist_sellers_dataset.csv": "1f643d2b950373b85735e7794b20986f528d7a000432e7c6f9bcbb44d0846a0e"
+  },
+  "tables_info": {
+    "orders": {
+      "shape": [
+        99441,
+        8
+      ],
+      "rows": 99441,
+      "cols": 8,
+      "null_cols": {
+        "order_approved_at": 160,
+        "order_delivered_carrier_date": 1783,
+        "order_delivered_customer_date": 2965
+      }
+    },
+    "items": {
+      "shape": [
+        112650,
+        7
+      ],
+      "rows": 112650,
+      "cols": 7,
+      "null_cols": {}
+    },
+    "products": {
+      "shape": [
+        32951,
+        9
+      ],
+      "rows": 32951,
+      "cols": 9,
+      "null_cols": {
+        "product_category_name": 610,
+        "product_name_lenght": 610,
+        "product_description_lenght": 610,
+        "product_photos_qty": 610,
+        "product_weight_g": 2,
+        "product_length_cm": 2,
+        "product_height_cm": 2,
+        "product_width_cm": 2
+      }
+    },
+    "sellers": {
+      "shape": [
+        3095,
+        4
+      ],
+      "rows": 3095,
+      "cols": 4,
+      "null_cols": {}
+    },
+    "customers": {
+      "shape": [
+        99441,
+        5
+      ],
+      "rows": 99441,
+      "cols": 5,
+      "null_cols": {}
+    }
+  },
+  "order_status": {
+    "delivered": 96478,
+    "shipped": 1107,
+    "canceled": 625,
+    "unavailable": 609,
+    "invoiced": 314,
+    "processing": 301,
+    "created": 5,
+    "approved": 2
+  },
+  "logic_anomalies": {
+    "carrier_before_purchase": 166,
+    "customer_before_carrier": 23,
+    "cohort_ts_anomaly": 117
+  },
+  "funnel": {
+    "0_raw_orders": 99441,
+    "1_delivered_with_timestamps_1seller": 95180,
+    "2_cohort_20170101_to_20180801": 88526,
+    "splits": {
+      "train_fit": 55808,
+      "validation": 13953,
+      "test": 18765
+    }
+  },
+  "monthly_stats": [
+    {
+      "month": "2016-09",
+      "orders_count": 1,
+      "late_handover_count": 1,
+      "late_handover_rate": 1.0,
+      "late_delivery_count": 1,
+      "late_delivery_rate": 1.0
+    },
+    {
+      "month": "2016-10",
+      "orders_count": 262,
+      "late_handover_count": 128,
+      "late_handover_rate": 0.4885,
+      "late_delivery_count": 3,
+      "late_delivery_rate": 0.0115
+    },
+    {
+      "month": "2016-12",
+      "orders_count": 1,
+      "late_handover_count": 0,
+      "late_handover_rate": 0.0,
+      "late_delivery_count": 0,
+      "late_delivery_rate": 0.0
+    },
+    {
+      "month": "2017-01",
+      "orders_count": 711,
+      "late_handover_count": 159,
+      "late_handover_rate": 0.2236,
+      "late_delivery_count": 22,
+      "late_delivery_rate": 0.0309
+    },
+    {
+      "month": "2017-02",
+      "orders_count": 1626,
+      "late_handover_count": 283,
+      "late_handover_rate": 0.174,
+      "late_delivery_count": 50,
+      "late_delivery_rate": 0.0308
+    },
+    {
+      "month": "2017-03",
+      "orders_count": 2549,
+      "late_handover_count": 172,
+      "late_handover_rate": 0.0675,
+      "late_delivery_count": 143,
+      "late_delivery_rate": 0.0561
+    },
+    {
+      "month": "2017-04",
+      "orders_count": 2260,
+      "late_handover_count": 160,
+      "late_handover_rate": 0.0708,
+      "late_delivery_count": 178,
+      "late_delivery_rate": 0.0788
+    },
+    {
+      "month": "2017-05",
+      "orders_count": 3516,
+      "late_handover_count": 255,
+      "late_handover_rate": 0.0725,
+      "late_delivery_count": 130,
+      "late_delivery_rate": 0.037
+    },
+    {
+      "month": "2017-06",
+      "orders_count": 3117,
+      "late_handover_count": 244,
+      "late_handover_rate": 0.0783,
+      "late_delivery_count": 121,
+      "late_delivery_rate": 0.0388
+    },
+    {
+      "month": "2017-07",
+      "orders_count": 3766,
+      "late_handover_count": 287,
+      "late_handover_rate": 0.0762,
+      "late_delivery_count": 132,
+      "late_delivery_rate": 0.0351
+    },
+    {
+      "month": "2017-08",
+      "orders_count": 4157,
+      "late_handover_count": 289,
+      "late_handover_rate": 0.0695,
+      "late_delivery_count": 135,
+      "late_delivery_rate": 0.0325
+    },
+    {
+      "month": "2017-09",
+      "orders_count": 4125,
+      "late_handover_count": 296,
+      "late_handover_rate": 0.0718,
+      "late_delivery_count": 216,
+      "late_delivery_rate": 0.0524
+    },
+    {
+      "month": "2017-10",
+      "orders_count": 4378,
+      "late_handover_count": 349,
+      "late_handover_rate": 0.0797,
+      "late_delivery_count": 233,
+      "late_delivery_rate": 0.0532
+    },
+    {
+      "month": "2017-11",
+      "orders_count": 7055,
+      "late_handover_count": 913,
+      "late_handover_rate": 0.1294,
+      "late_delivery_count": 1006,
+      "late_delivery_rate": 0.1426
+    },
+    {
+      "month": "2017-12",
+      "orders_count": 5616,
+      "late_handover_count": 621,
+      "late_handover_rate": 0.1106,
+      "late_delivery_count": 501,
+      "late_delivery_rate": 0.0892
+    },
+    {
+      "month": "2018-01",
+      "orders_count": 6890,
+      "late_handover_count": 707,
+      "late_handover_rate": 0.1026,
+      "late_delivery_count": 458,
+      "late_delivery_rate": 0.0665
+    },
+    {
+      "month": "2018-02",
+      "orders_count": 6485,
+      "late_handover_count": 797,
+      "late_handover_rate": 0.1229,
+      "late_delivery_count": 1007,
+      "late_delivery_rate": 0.1553
+    },
+    {
+      "month": "2018-03",
+      "orders_count": 6996,
+      "late_handover_count": 606,
+      "late_handover_rate": 0.0866,
+      "late_delivery_count": 1525,
+      "late_delivery_rate": 0.218
+    },
+    {
+      "month": "2018-04",
+      "orders_count": 6514,
+      "late_handover_count": 396,
+      "late_handover_rate": 0.0608,
+      "late_delivery_count": 362,
+      "late_delivery_rate": 0.0556
+    },
+    {
+      "month": "2018-05",
+      "orders_count": 6827,
+      "late_handover_count": 450,
+      "late_handover_rate": 0.0659,
+      "late_delivery_count": 566,
+      "late_delivery_rate": 0.0829
+    },
+    {
+      "month": "2018-06",
+      "orders_count": 5989,
+      "late_handover_count": 413,
+      "late_handover_rate": 0.069,
+      "late_delivery_count": 83,
+      "late_delivery_rate": 0.0139
+    },
+    {
+      "month": "2018-07",
+      "orders_count": 5949,
+      "late_handover_count": 539,
+      "late_handover_rate": 0.0906,
+      "late_delivery_count": 248,
+      "late_delivery_rate": 0.0417
+    },
+    {
+      "month": "2018-08",
+      "orders_count": 6390,
+      "late_handover_count": 588,
+      "late_handover_rate": 0.092,
+      "late_delivery_count": 687,
+      "late_delivery_rate": 0.1075
+    }
+  ],
+  "time_ranges": {
+    "all_orders_min_approved": "2016-09-15 12:16:38",
+    "all_orders_max_approved": "2018-09-03 17:40:06",
+    "cohort_min_approved": "2017-01-05 12:10:17",
+    "cohort_max_approved": "2018-07-31 23:55:18",
+    "train_fit_range": "2017-01-05 to 2018-02-27",
+    "validation_range": "2018-02-27 to 2018-04-30",
+    "test_range": "2018-05-01 to 2018-07-31"
+  }
+}
