@@ -1,0 +1,42 @@
+[
+  {
+    "iteration": "Iter 1",
+    "model_name": "Dummy Classifier",
+    "features": "Không có (đoán hằng số)",
+    "test_roc_auc": 0.5,
+    "test_pr_auc": 0.0747,
+    "note": "Baseline sàn ngẫu nhiên"
+  },
+  {
+    "iteration": "Iter 2",
+    "model_name": "Decision Tree (Order Only)",
+    "features": "10 đặc trưng đơn hàng (không lịch sử)",
+    "test_roc_auc": 0.5183,
+    "test_pr_auc": 0.0795,
+    "note": "Gần như vô dụng nếu thiếu lịch sử người bán"
+  },
+  {
+    "iteration": "Iter 3",
+    "model_name": "Decision Tree Baseline",
+    "features": "20 đặc trưng (thêm lịch sử seller/lane)",
+    "test_roc_auc": 0.6666,
+    "test_pr_auc": 0.1541,
+    "note": "Tín hiệu nhảy vọt nhờ đặc trưng lịch sử"
+  },
+  {
+    "iteration": "Iter 4",
+    "model_name": "Decision Tree Tuned (Final)",
+    "features": "20 đặc trưng + GridSearch CV + Khóa ngưỡng",
+    "test_roc_auc": 0.6553,
+    "test_pr_auc": 0.1548,
+    "note": "Mô hình lõi chuẩn hóa, kiểm soát overfitting"
+  },
+  {
+    "iteration": "Iter 5",
+    "model_name": "Random Forest NumPy",
+    "features": "20 đặc trưng, 50 cây ensemble",
+    "test_roc_auc": 0.6905,
+    "test_pr_auc": 0.1794,
+    "note": "Phi tuyến phức tạp, đối chiếu trần hiệu năng"
+  }
+]

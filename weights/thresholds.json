@@ -1,0 +1,14 @@
+{
+  "t1": 0.1883,
+  "t2": 0.0651,
+  "t_f1": 0.1799,
+  "val_best_f1": 0.2828,
+  "t_cost": 0.506,
+  "val_min_cost": 3101.0,
+  "c_fn": 3.0,
+  "c_fp": 1.0,
+  "prior_del": 0.0889,
+  "prior_han": 0.0952,
+  "train_median_weight": 800.0,
+  "train_median_vol": 7803.0
+}

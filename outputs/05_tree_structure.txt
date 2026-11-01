@@ -1,0 +1,60 @@
+├── Nếu seller_han_rate < 0.168:
+│   ├── Nếu seller_han_rate < 0.083:
+│   │   ├── Nếu seller_han_rate < 0.046:
+│   │   │   ├── Nếu min_to_limit_h < 143.983:
+│   │   │   │   ├── Nếu global_24h < 233.000:
+│   │   │   │   │   └── [Lá] p_risk = 0.039 (n = 3,921)
+│   │   │   │   └── Nếu global_24h >= 233.000:
+│   │   │   │       └── [Lá] p_risk = 0.078 (n = 1,134)
+│   │   │   └── Nếu min_to_limit_h >= 143.983:
+│   │   │       ├── Nếu seller_han_rate < 0.034:
+│   │   │       │   └── [Lá] p_risk = 0.017 (n = 7,164)
+│   │   │       └── Nếu seller_han_rate >= 0.034:
+│   │   │           └── [Lá] p_risk = 0.039 (n = 3,335)
+│   │   └── Nếu seller_han_rate >= 0.046:
+│   │       ├── Nếu seller_24h < 7.000:
+│   │       │   ├── Nếu seller_24h < 2.000:
+│   │       │   │   └── [Lá] p_risk = 0.058 (n = 13,483)
+│   │       │   └── Nếu seller_24h >= 2.000:
+│   │       │       └── [Lá] p_risk = 0.100 (n = 3,509)
+│   │       └── Nếu seller_24h >= 7.000:
+│   │           ├── Nếu weight < 1150.000:
+│   │           │   └── [Lá] p_risk = 0.094 (n = 235)
+│   │           └── Nếu weight >= 1150.000:
+│   │               └── [Lá] p_risk = 0.310 (n = 303)
+│   └── Nếu seller_han_rate >= 0.083:
+│       ├── Nếu weight < 2100.000:
+│       │   ├── Nếu vol < 640.000:
+│       │   │   ├── Nếu hour < 12.000:
+│       │   │   │   └── [Lá] p_risk = 0.416 (n = 113)
+│       │   │   └── Nếu hour >= 12.000:
+│       │   │       └── [Lá] p_risk = 0.128 (n = 125)
+│       │   └── Nếu vol >= 640.000:
+│       │       ├── Nếu seller_han_rate < 0.128:
+│       │       │   └── [Lá] p_risk = 0.104 (n = 10,217)
+│       │       └── Nếu seller_han_rate >= 0.128:
+│       │           └── [Lá] p_risk = 0.148 (n = 2,555)
+│       └── Nếu weight >= 2100.000:
+│           ├── Nếu global_24h < 223.000:
+│           │   ├── Nếu freight < 60.720:
+│           │   │   └── [Lá] p_risk = 0.127 (n = 2,958)
+│           │   └── Nếu freight >= 60.720:
+│           │       └── [Lá] p_risk = 0.214 (n = 434)
+│           └── Nếu global_24h >= 223.000:
+│               ├── Nếu seller_late_rate < 0.041:
+│               │   └── [Lá] p_risk = 0.492 (n = 177)
+│               └── Nếu seller_late_rate >= 0.041:
+│                   └── [Lá] p_risk = 0.195 (n = 912)
+└── Nếu seller_han_rate >= 0.168:
+    ├── Nếu seller_late_rate < 0.030:
+    │   ├── Nếu vol < 8151.000:
+    │   │   └── [Lá] p_risk = 0.176 (n = 119)
+    │   └── Nếu vol >= 8151.000:
+    │       ├── Nếu sla_days < 26.480:
+    │       │   └── [Lá] p_risk = 0.046 (n = 175)
+    │       └── Nếu sla_days >= 26.480:
+    │           └── [Lá] p_risk = 0.130 (n = 131)
+    └── Nếu seller_late_rate >= 0.030:
+        ├── Nếu seller_24h < 5.000:
+        │   ├── Nếu seller_han_rate < 0.201:
+        │   │   ├── Nếu seller_late_rate < 0.054:

@@ -1,0 +1,51 @@
+{
+  "n_bootstraps": 1000,
+  "tree_roc_auc_95_ci": {
+    "mean": 0.6548,
+    "ci_lower": 0.6395,
+    "ci_upper": 0.6714
+  },
+  "tree_pr_auc_95_ci": {
+    "mean": 0.1551,
+    "ci_lower": 0.142,
+    "ci_upper": 0.1699
+  },
+  "paired_diff_tree_minus_seller_95_ci": {
+    "mean": -0.0161,
+    "ci_lower": -0.0237,
+    "ci_upper": -0.0082,
+    "contains_zero": false
+  },
+  "paired_diff_tree_minus_fifo_95_ci": {
+    "mean": 0.19,
+    "ci_lower": 0.1696,
+    "ci_upper": 0.2108,
+    "contains_zero": false
+  },
+  "monthly_test_performance": {
+    "2018-05": {
+      "orders_count": 6827,
+      "late_count": 450,
+      "late_rate": 0.0659,
+      "tree_roc_auc": 0.7009,
+      "tree_pr_auc": 0.1868,
+      "seller_roc_auc": 0.7222
+    },
+    "2018-06": {
+      "orders_count": 5989,
+      "late_count": 413,
+      "late_rate": 0.069,
+      "tree_roc_auc": 0.6423,
+      "tree_pr_auc": 0.1147,
+      "seller_roc_auc": 0.6427
+    },
+    "2018-07": {
+      "orders_count": 5949,
+      "late_count": 539,
+      "late_rate": 0.0906,
+      "tree_roc_auc": 0.6223,
+      "tree_pr_auc": 0.1721,
+      "seller_roc_auc": 0.648
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "total_test_orders": 18765,
+  "total_late_orders": 1402,
+  "total_fn_count": 857,
+  "total_fp_count": 2387,
+  "fn_by_seller_state_top5": {
+    "SP": 633,
+    "PR": 60,
+    "RJ": 55,
+    "MG": 50,
+    "SC": 23
+  },
+  "fn_by_seller_history_group": {
+    "Giàu lịch sử (>20)": 594,
+    "Lịch sử vừa (6-20)": 126,
+    "Ít lịch sử (1-5)": 90,
+    "Chưa có lịch sử (n=0)": 47
+  },
+  "borderline_cases_around_t1": {
+    "threshold_t1": 0.1883,
+    "window": "t1 ± 0.03",
+    "orders_in_window": 2104,
+    "late_orders_in_window": 173,
+    "late_rate_in_window": 0.0822
+  }
+}

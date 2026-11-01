@@ -99,6 +99,55 @@ Tài liệu này ghi lại một cách minh bạch toàn bộ các hoạt độn
   4. Chạy toàn bộ test suite dự án qua `pytest`: 20/20 bài test vượt qua (100% PASS).
 - **Trạng thái:** Hoàn thành nghiệm thu Giai đoạn 3.
 
+### Giai đoạn 4: Tuning, CV, Huấn luyện cuối (Các bước 14–17)
+- **Thời gian:** 2026-11-01
+- **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10
+- **Nội dung thực hiện bởi AI:**
+  1. Xây dựng module `src/weights.py`:
+     - `export_tree_dict` & `predict_tree_dict`: Xuất cấu trúc cây ra JSON theo Phụ lục D, quy ước rẽ chuẩn `x[f] < thr -> left` với ngưỡng thực tế `threshold_value`.
+     - `save_tree`: Lưu trữ cấu trúc cây (`weights/tree.json`), các ngưỡng đã khóa (`weights/thresholds.json`), siêu tham số (`weights/best_params.json`), danh sách đặc trưng (`weights/feature_names.json`), và mảng nhị phân `weights/tree.npz`.
+     - `load_tree`: Nạp lại mô hình cây hoàn chỉnh trong môi trường Python.
+     - `verify_roundtrip`: Kiểm tra khứ hồi (dự đoán trước và sau khi lưu khớp tuyệt đối, sai số 0.0).
+  2. Viết module thực thi huấn luyện và tuning `src/train.py`:
+     - Chạy GridSearch trên 80 tổ hợp siêu tham số qua Expanding-window 4-fold và Stratified 5-fold (tiêu chí PR-AUC).
+     - Tìm ra siêu tham số tối ưu: `{'max_depth': 6, 'min_samples_leaf': 100, 'criterion': 'gini', 'n_bins': 32, 'min_samples_split': 200}` với CV PR-AUC = 0.2021.
+     - Quét và KHÓA cứng các ngưỡng trên tập Validation: `t1 = 0.1883` (phân vị 85%), `t2 = 0.0651` (phân vị 45%), ngưỡng tối ưu F1 `t_f1 = 0.1799`.
+     - Lưu toàn bộ các ngưỡng vào `weights/thresholds.json`.
+  3. Mở tập Test DUY NHẤT 1 LẦN sau khi các ngưỡng đã khóa hoàn toàn:
+     - Đạt Test ROC-AUC = 0.6553, PR-AUC = 0.1548 (khớp số liệu tham chiếu ~0.667 / 0.154 ở Mục 4.9).
+     - Brier score = 0.0711.
+     - Tại ngưỡng F1: Precision = 0.1859, Recall = 0.3887, F1 = 0.2515 (TN=14,976, FP=2,387, FN=857, TP=545).
+     - Phân tầng P1 (15.6% đơn, trễ 18.59%, bắt 38.87% đơn trễ); P2 (50.41% đơn, trễ 5.91%); P3 (33.97% đơn, trễ 4.68%).
+     - Recall top 15% rủi ro nhất = 38.16%.
+     - Tổng số đơn cảnh báo Trưởng ca = 41.06% (bắt được 57.49% đơn trễ).
+     - Xuất báo cáo chi tiết vào `outputs/04_final_metrics.json` và `outputs/04_tuning_report.md`.
+  4. Viết và thực thi các bài kiểm thử:
+     - `tests/test_split_cv.py`: Đảm bảo expanding-window không rò rỉ và stratified k-fold giữ nguyên tỷ lệ nhãn.
+     - `tests/test_weights.py`: Kiểm tra khứ hồi lưu/nạp đạt sai số 0.0.
+  5. Chạy toàn bộ test suite dự án qua `pytest`: 23/23 bài test vượt qua (100% PASS).
+- **Trạng thái:** Hoàn thành nghiệm thu Giai đoạn 4.
+
+### Giai đoạn 5: Thống kê, Lỗi, Giải thích và Mô phỏng (Các bước 18–21)
+- **Thời gian:** 2026-11-01
+- **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10
+- **Nội dung thực hiện bởi AI:**
+  1. Cài đặt module mô phỏng hàng đợi kho [`src/simulate.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/simulate.py) theo đúng Phụ lục C và Mục 7:
+     - 18,765 đơn hàng thật trong test, thời gian xử lý $6 + 3 \times (\text{n\_items} - 1)$ phút.
+     - Ca làm việc 08:00 - 17:00, Thứ 2 đến Thứ 7.
+     - So sánh 4 chính sách: FIFO (As-Is), EDD (baseline theo hạn), AI-EDD (To-Be) và AI Level-first (làm hết P1 rồi P2 rồi P3, bỏ qua hạn).
+     - Quét toàn bộ lưới độ nhạy $K \in \{3,4,5,6\} \times \text{time\_factor} \in \{0.8, 0.9, 1.0\}$, lưu vào `outputs/05_simulation_grid.json`.
+     - Kết quả tại $K=3$, 100% thời gian: FIFO trễ 7.2%, EDD trễ 0.8%, AI-EDD trễ 0.9%, AI Level-first trễ 11.6%.
+  2. Viết module thống kê, phân tích lỗi và giải thích [`src/statistical_analysis.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/statistical_analysis.py):
+     - **Bước 18:** Bootstrap 1,000 lần tính khoảng tin cậy 95% của ROC-AUC ([0.6395, 0.6714]) và PR-AUC ([0.1420, 0.1699]); Paired bootstrap hiệu Tree - Seller và Tree - FIFO; đo lường ROC-AUC theo từng tháng test (05, 06, 07/2018).
+     - **Bước 19:** Phân tích 857 đơn trễ bị bỏ sót (FN) theo bang và lịch sử người bán; khảo sát đơn hàng sát ngưỡng $t_1 \pm 0.03$.
+     - **Bước 20:** Xuất cây dạng text (`outputs/05_tree_structure.txt`), trích xuất quyết định chi tiết 5 đơn mẫu, tính Gini importance và Permutation importance trên validation.
+     - **Bước 21:** Xây dựng bảng lặp 5 Iterations (`outputs/05_iteration_table.json`) và báo cáo tổng hợp `outputs/05_phase5_report.md`.
+  3. Viết bộ kiểm thử [`tests/test_simulate.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/tests/test_simulate.py): Kiểm tra tính bảo toàn (`done >= t_arr`), ca làm việc hợp lệ và tính tuần tự khi $K=1$.
+  4. Chạy toàn bộ test suite dự án qua `pytest`: 26/26 bài test vượt qua (100% PASS).
+- **Trạng thái:** Hoàn thành nghiệm thu Giai đoạn 5 (Chưa làm web, tuân thủ đúng yêu cầu).
+
+
+
 
 
 

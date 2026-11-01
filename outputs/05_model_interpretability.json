@@ -1,0 +1,273 @@
+{
+  "gini_feature_importances": {
+    "seller_han_rate": 0.6674,
+    "seller_late_rate": 0.0938,
+    "seller_24h": 0.0744,
+    "global_24h": 0.072,
+    "weight": 0.0337,
+    "min_to_limit_h": 0.0218,
+    "vol": 0.0149,
+    "hour": 0.011,
+    "freight": 0.0064,
+    "dow": 0.0019,
+    "freight_ratio": 0.0015,
+    "sla_days": 0.0012,
+    "approve_lag_h": 0.0,
+    "n_items": 0.0,
+    "n_products": 0.0,
+    "price": 0.0,
+    "same_state": 0.0,
+    "cust_SP": 0.0,
+    "sell_SP": 0.0,
+    "lane_late_rate": 0.0
+  },
+  "permutation_importances_val": {
+    "seller_han_rate": 0.0981,
+    "seller_24h": 0.0083,
+    "weight": 0.0077,
+    "min_to_limit_h": 0.0021,
+    "seller_late_rate": 0.0012,
+    "global_24h": 0.0008,
+    "freight": 0.0007,
+    "vol": 0.0002,
+    "hour": 0.0001,
+    "dow": 0.0001,
+    "sla_days": 0.0,
+    "approve_lag_h": 0.0,
+    "n_items": 0.0,
+    "n_products": 0.0,
+    "price": 0.0,
+    "freight_ratio": 0.0,
+    "same_state": 0.0,
+    "cust_SP": 0.0,
+    "sell_SP": 0.0,
+    "lane_late_rate": 0.0
+  },
+  "sample_orders_decision_paths": [
+    {
+      "order_index": 8,
+      "order_id_short": "963dd4dc...",
+      "actual_late_handover": 0,
+      "predicted_p_risk": 0.1883,
+      "priority_level": "P1",
+      "decision_path": [
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.168,
+          "order_value": 0.133,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.083,
+          "order_value": 0.133,
+          "direction": "Phải (>=)"
+        },
+        {
+          "feature": "weight",
+          "threshold": 2100.0,
+          "order_value": 584.0,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "vol",
+          "threshold": 640.0,
+          "order_value": 2288.0,
+          "direction": "Phải (>=)"
+        },
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.128,
+          "order_value": 0.133,
+          "direction": "Phải (>=)"
+        },
+        {
+          "feature": "seller_late_rate",
+          "threshold": 0.059,
+          "order_value": 0.202,
+          "direction": "Phải (>=)"
+        }
+      ]
+    },
+    {
+      "order_index": 15,
+      "order_id_short": "f7fdd929...",
+      "actual_late_handover": 0,
+      "predicted_p_risk": 0.1883,
+      "priority_level": "P1",
+      "decision_path": [
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.168,
+          "order_value": 0.133,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.083,
+          "order_value": 0.133,
+          "direction": "Phải (>=)"
+        },
+        {
+          "feature": "weight",
+          "threshold": 2100.0,
+          "order_value": 584.0,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "vol",
+          "threshold": 640.0,
+          "order_value": 2288.0,
+          "direction": "Phải (>=)"
+        },
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.128,
+          "order_value": 0.133,
+          "direction": "Phải (>=)"
+        },
+        {
+          "feature": "seller_late_rate",
+          "threshold": 0.059,
+          "order_value": 0.202,
+          "direction": "Phải (>=)"
+        }
+      ]
+    },
+    {
+      "order_index": 1,
+      "order_id_short": "670f7c6e...",
+      "actual_late_handover": 0,
+      "predicted_p_risk": 0.1101,
+      "priority_level": "P2",
+      "decision_path": [
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.168,
+          "order_value": 0.099,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.083,
+          "order_value": 0.099,
+          "direction": "Phải (>=)"
+        },
+        {
+          "feature": "weight",
+          "threshold": 2100.0,
+          "order_value": 13300.0,
+          "direction": "Phải (>=)"
+        },
+        {
+          "feature": "global_24h",
+          "threshold": 223.0,
+          "order_value": 82.0,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "freight",
+          "threshold": 60.72,
+          "order_value": 36.0,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "min_to_limit_h",
+          "threshold": 120.0,
+          "order_value": 144.0,
+          "direction": "Phải (>=)"
+        }
+      ]
+    },
+    {
+      "order_index": 2,
+      "order_id_short": "b02f2888...",
+      "actual_late_handover": 0,
+      "predicted_p_risk": 0.0651,
+      "priority_level": "P2",
+      "decision_path": [
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.168,
+          "order_value": 0.063,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.083,
+          "order_value": 0.063,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.046,
+          "order_value": 0.063,
+          "direction": "Phải (>=)"
+        },
+        {
+          "feature": "seller_24h",
+          "threshold": 7.0,
+          "order_value": 0.0,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "seller_24h",
+          "threshold": 2.0,
+          "order_value": 0.0,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.057,
+          "order_value": 0.063,
+          "direction": "Phải (>=)"
+        }
+      ]
+    },
+    {
+      "order_index": 0,
+      "order_id_short": "d8b967bf...",
+      "actual_late_handover": 0,
+      "predicted_p_risk": 0.0131,
+      "priority_level": "P3",
+      "decision_path": [
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.168,
+          "order_value": 0.016,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.083,
+          "order_value": 0.016,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.046,
+          "order_value": 0.016,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "min_to_limit_h",
+          "threshold": 143.983,
+          "order_value": 144.0,
+          "direction": "Phải (>=)"
+        },
+        {
+          "feature": "seller_han_rate",
+          "threshold": 0.034,
+          "order_value": 0.016,
+          "direction": "Trái (<)"
+        },
+        {
+          "feature": "vol",
+          "threshold": 18636.5,
+          "order_value": 12000.0,
+          "direction": "Trái (<)"
+        }
+      ]
+    }
+  ]
+}

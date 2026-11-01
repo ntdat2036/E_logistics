@@ -1,0 +1,22 @@
+[
+  "min_to_limit_h",
+  "sla_days",
+  "approve_lag_h",
+  "n_items",
+  "n_products",
+  "price",
+  "freight",
+  "freight_ratio",
+  "weight",
+  "vol",
+  "same_state",
+  "cust_SP",
+  "sell_SP",
+  "hour",
+  "dow",
+  "global_24h",
+  "seller_24h",
+  "seller_han_rate",
+  "seller_late_rate",
+  "lane_late_rate"
+]
