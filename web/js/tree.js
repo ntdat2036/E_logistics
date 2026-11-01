@@ -48,3 +48,4 @@ function priorityLevel(p, model) {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { predictTree, priorityLevel };
 }
+

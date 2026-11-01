@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CK10 - Chuỗi Dịch Vụ Logistics Tự Động Có AI Ra Quyết Định (Nghiệp Vụ Kho)</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Thư viện Chart.js ghim phiên bản cố định offline -->
+  <script src="vendor/chart.umd.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-container">
+      <div class="brand">
+        <h1>HỆ THỐNG PHÂN TẦNG ƯU TIÊN ĐƠN HÀNG KHO BẰNG AI (CK10)</h1>
+        <p>Đồ án môn E-logistics — Nghiệp vụ Kho (Inventory) & Bàn giao Vận tải | Dữ liệu Olist Brazilian E-Commerce</p>
+      </div>
+      <div>
+        <span class="badge badge-p1" style="background:#334155; color:#f8fafc; border:1px solid #475569; font-size: 0.8rem;">
+          NumPy Thuần • Tái lập 100% • Seed 42
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVIGATION (8 TRANG) -->
+  <nav aria-label="Điều hướng chính">
+    <div class="nav-container">
+      <button class="nav-btn active" data-tab="overview">1. Tổng quan</button>
+      <button class="nav-btn" data-tab="process">2. Quy trình</button>
+      <button class="nav-btn" data-tab="data">3. Dữ liệu</button>
+      <button class="nav-btn" data-tab="model">4. Mô hình</button>
+      <button class="nav-btn" data-tab="demo">5. Demo Tương tác</button>
+      <button class="nav-btn" data-tab="simulation">6. Mô phỏng</button>
+      <button class="nav-btn" data-tab="risk">7. Rủi ro</button>
+      <button class="nav-btn" data-tab="ethics">8. Tài liệu & Đạo đức</button>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main>
+
+    <!-- TRANG 1: TỔNG QUAN -->
+    <section id="overview" class="tab-pane active">
+      <div class="card">
+        <h2 class="card-title">Vấn Đề Nghiên Cứu & Bối Cảnh Nghiệp Vụ Kho</h2>
+        <p style="margin-bottom: 1rem;">
+          Trong thương mại điện tử, <strong>trễ bàn giao cho vận tải (late handover)</strong> tại kho là nguyên nhân hàng đầu phá vỡ cam kết giao hàng với khách hàng. 
+          Đề tài nghiên cứu ứng dụng <strong>Mô hình Cây Quyết Định (Decision Tree) thuần NumPy</strong> để dự đoán nguy cơ trễ bàn giao ngay tại thời điểm đơn được phê duyệt, 
+          từ đó phân loại đơn hàng thành 3 mức ưu tiên <strong>P1 (Cao)</strong>, <strong>P2 (Trung bình)</strong>, và <strong>P3 (Thấp)</strong>, kết hợp cơ chế cảnh báo Trưởng ca (Triage) và kiểm soát hạn dùng FEFO.
+        </p>
+
+        <div class="grid-4" style="margin-top: 1.5rem;">
+          <div class="kpi-card">
+            <div class="kpi-title">Lead Time Trung Bình Kho</div>
+            <div class="kpi-value" id="kpi-leadtime">--</div>
+            <div class="kpi-sub">p95: 107.9 giờ (Mô phỏng 18.7k đơn)</div>
+          </div>
+          <div class="kpi-card warning">
+            <div class="kpi-title">Đúng Hạn Bàn Giao (As-Is FIFO)</div>
+            <div class="kpi-value" id="kpi-ontime-fifo">--</div>
+            <div class="kpi-sub">Vận hành truyền thống (đến trước làm trước)</div>
+          </div>
+          <div class="kpi-card success">
+            <div class="kpi-title">Đúng Hạn Bàn Giao (To-Be AI-EDD)</div>
+            <div class="kpi-value" id="kpi-ontime-ai">--</div>
+            <div class="kpi-sub">Kết hợp hạn bàn giao và rủi ro AI</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Quyết Định Cần Can Thiệp</div>
+            <div class="kpi-value" id="kpi-manual-tobe">--</div>
+            <div class="kpi-sub">As-Is: 100% người xếp lịch thủ công</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 class="card-title">Kết Luận Chính Từ Thực Nghiệm</h3>
+          <ul id="list-conclusions" style="padding-left: 1.25rem; font-size: 0.9rem; line-height: 1.8;"></ul>
+        </div>
+        <div class="card">
+          <h3 class="card-title">Hạn Chế Cần Ghi Nhận (Mục 11)</h3>
+          <ul id="list-limits" style="padding-left: 1.25rem; font-size: 0.9rem; line-height: 1.8; color: #475569;"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRANG 2: QUY TRÌNH (SWIMLANE AS-IS vs TO-BE) -->
+    <section id="process" class="tab-pane">
+      <div class="card">
+        <h2 class="card-title">Sơ Đồ Quy Trình Swimlane: Nhận Đơn → Kho → Vận Tải → Giao Chặng Cuối</h2>
+        <p style="margin-bottom: 1.5rem; font-size: 0.9rem;">
+          So sánh trực quan giữa quy trình truyền thống <strong>As-Is</strong> (FIFO, thủ công toàn bộ) và quy trình tự động hóa có AI <strong>To-Be</strong>. 
+          Chỉ rõ điểm tự động hóa và các điểm bắt buộc phải có con người can thiệp (kiểm cảm quan cận date, kiểm lệch tồn, Trưởng ca xử lý rủi ro P1).
+        </p>
+
+        <!-- SVG SWIMLANE SƠ ĐỒ AS-IS vs TO-BE -->
+        <div class="table-responsive" style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid var(--border);">
+          <svg viewBox="0 0 1100 520" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="font-family: inherit;">
+            <!-- Lanes Header -->
+            <rect x="0" y="0" width="220" height="40" fill="#1e293b" />
+            <text x="110" y="25" fill="white" font-weight="bold" font-size="13" text-anchor="middle">1. Nhận & Duyệt Đơn</text>
+            
+            <rect x="220" y="0" width="340" height="40" fill="#1e3a8a" />
+            <text x="390" y="25" fill="white" font-weight="bold" font-size="13" text-anchor="middle">2. Nghiệp Vụ Kho (Inventory) [TRỌNG TÂM]</text>
+            
+            <rect x="560" y="0" width="260" height="40" fill="#0d9488" />
+            <text x="690" y="25" fill="white" font-weight="bold" font-size="13" text-anchor="middle">3. Bàn Giao Vận Tải (Carrier)</text>
+            
+            <rect x="820" y="0" width="280" height="40" fill="#334155" />
+            <text x="960" y="25" fill="white" font-weight="bold" font-size="13" text-anchor="middle">4. Giao Hàng Chặng Cuối (Customer)</text>
+
+            <!-- AS-IS ROW -->
+            <rect x="0" y="50" width="1100" height="210" fill="#f8fafc" stroke="#cbd5e1" />
+            <text x="15" y="80" fill="#991b1b" font-weight="bold" font-size="14">QUY TRÌNH AS-IS (Truyền thống, FIFO, 100% Thủ công sắp lịch)</text>
+
+            <!-- As-Is Steps -->
+            <rect x="20" y="110" width="180" height="60" rx="6" fill="#ffffff" stroke="#94a3b8" />
+            <text x="110" y="135" font-size="11" font-weight="bold" text-anchor="middle">Duyệt thanh toán</text>
+            <text x="110" y="153" font-size="10" fill="#64748b" text-anchor="middle">order_approved_at</text>
+
+            <line x1="200" y1="140" x2="250" y2="140" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)" />
+
+            <rect x="250" y="100" width="280" height="80" rx="6" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5" />
+            <text x="390" y="125" font-size="12" font-weight="bold" fill="#991b1b" text-anchor="middle">⚠️ ĐIỂM NGHẼN KHO (INVENTORY)</text>
+            <text x="390" y="145" font-size="11" text-anchor="middle">Sắp xếp đơn theo FIFO (đơn đến trước làm trước)</text>
+            <text x="390" y="163" font-size="10" fill="#b91c1c" text-anchor="middle">100% thủ công • Không quan tâm SLA/Hạn giao</text>
+
+            <line x1="530" y1="140" x2="590" y2="140" stroke="#64748b" stroke-width="2" />
+
+            <rect x="590" y="110" width="200" height="60" rx="6" fill="#ffffff" stroke="#94a3b8" />
+            <text x="690" y="135" font-size="11" font-weight="bold" text-anchor="middle">Bàn giao xe tải gom</text>
+            <text x="690" y="153" font-size="10" fill="#dc2626" font-weight="bold" text-anchor="middle">Trễ hạn 7.2% - 7.5%</text>
+
+            <line x1="790" y1="140" x2="850" y2="140" stroke="#64748b" stroke-width="2" />
+
+            <rect x="850" y="110" width="220" height="60" rx="6" fill="#ffffff" stroke="#94a3b8" />
+            <text x="960" y="135" font-size="11" font-weight="bold" text-anchor="middle">Giao khách (Customer SLA)</text>
+            <text x="960" y="153" font-size="10" fill="#64748b" text-anchor="middle">Trễ dây chuyền 8.0%</text>
+
+            <!-- TO-BE ROW -->
+            <rect x="0" y="280" width="1100" height="230" fill="#f0fdf4" stroke="#86efac" />
+            <text x="15" y="310" fill="#166534" font-weight="bold" font-size="14">QUY TRÌNH TO-BE (AI-EDD Ra Quyết Định Tự Động + Cảnh Báo Trưởng Ca)</text>
+
+            <!-- To-Be Steps -->
+            <rect x="20" y="340" width="180" height="70" rx="6" fill="#ffffff" stroke="#16a34a" stroke-width="1.5" />
+            <text x="110" y="365" font-size="11" font-weight="bold" fill="#15803d" text-anchor="middle">🤖 ĐIỂM TỰ ĐỘNG HÓA AI</text>
+            <text x="110" y="383" font-size="10" text-anchor="middle">Dự đoán điểm rủi ro p</text>
+            <text x="110" y="399" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="middle">Phân tầng: P1 / P2 / P3</text>
+
+            <line x1="200" y1="375" x2="240" y2="375" stroke="#16a34a" stroke-width="2" />
+
+            <!-- Decision branch in Warehouse -->
+            <rect x="240" y="330" width="140" height="90" rx="6" fill="#dbeafe" stroke="#3b82f6" />
+            <text x="310" y="352" font-size="11" font-weight="bold" text-anchor="middle">Đơn P2, P3 &</text>
+            <text x="310" y="368" font-size="11" font-weight="bold" text-anchor="middle">Đủ lịch sử seller</text>
+            <text x="310" y="390" font-size="10" fill="#1e40af" text-anchor="middle">TỰ ĐỘNG XẾP LỊCH</text>
+            <text x="310" y="406" font-size="10" font-weight="bold" fill="#15803d" text-anchor="middle">Chính sách AI-EDD</text>
+
+            <rect x="400" y="330" width="150" height="90" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5" />
+            <text x="475" y="352" font-size="11" font-weight="bold" fill="#92400e" text-anchor="middle">👤 ĐIỂM CÓ NGƯỜI (41%)</text>
+            <text x="475" y="370" font-size="10" text-anchor="middle">• Trưởng ca duyệt đơn P1</text>
+            <text x="475" y="386" font-size="10" text-anchor="middle">• Kiểm cảm quan cận date</text>
+            <text x="475" y="402" font-size="10" text-anchor="middle">• Xác minh lệch tồn kho</text>
+
+            <line x1="380" y1="375" x2="400" y2="375" stroke="#f59e0b" stroke-width="2" />
+            <line x1="550" y1="375" x2="600" y2="375" stroke="#16a34a" stroke-width="2" />
+
+            <rect x="600" y="340" width="190" height="70" rx="6" fill="#ffffff" stroke="#16a34a" />
+            <text x="695" y="365" font-size="11" font-weight="bold" fill="#15803d" text-anchor="middle">Kịp giờ chốt xe tải</text>
+            <text x="695" y="383" font-size="10" text-anchor="middle">shipping_limit_date</text>
+            <text x="695" y="400" font-size="10" font-weight="bold" fill="#15803d" text-anchor="middle">Trễ hạn giảm còn 0.8% - 0.9%</text>
+
+            <line x1="790" y1="375" x2="850" y2="375" stroke="#16a34a" stroke-width="2" />
+
+            <rect x="850" y="340" width="220" height="70" rx="6" fill="#ffffff" stroke="#16a34a" />
+            <text x="960" y="365" font-size="11" font-weight="bold" text-anchor="middle">Giao hàng đúng hẹn</text>
+            <text x="960" y="383" font-size="10" fill="#15803d" font-weight="bold" text-anchor="middle">Bảo toàn SLA khách hàng</text>
+            <text x="960" y="399" font-size="10" fill="#64748b" text-anchor="middle">Đúng hạn nâng lên 99.1%</text>
+          </svg>
+        </div>
+
+        <div class="grid-3" style="margin-top: 1.5rem;">
+          <div class="card" style="margin: 0;">
+            <h4 style="color: #2563eb; font-size: 0.95rem; margin-bottom: 0.5rem;">🤖 Điểm Tự Động Hóa AI</h4>
+            <p style="font-size: 0.85rem; color: #475569;">
+              Tại thời điểm <code>order_approved_at</code>, mô hình Cây quyết định tính điểm rủi ro và tự động xếp ưu tiên P1/P2/P3 không cần người can thiệp đối với 59% số đơn an toàn.
+            </p>
+          </div>
+          <div class="card" style="margin: 0;">
+            <h4 style="color: #d97706; font-size: 0.95rem; margin-bottom: 0.5rem;">👤 Điểm Bắt Buộc Có Con Người</h4>
+            <p style="font-size: 0.85rem; color: #475569;">
+              1. <strong>Kiểm cảm quan hàng cận date (FEFO):</strong> Đơn có hạn còn $\le 3$ ngày phải được thủ kho kiểm tra bao bì trước khi nhả đơn.<br>
+              2. <strong>Xử lý ngoại lệ:</strong> Trưởng ca can thiệp đơn P1 và người bán mới chưa đủ lịch sử ($n < 20$).
+            </p>
+          </div>
+          <div class="card" style="margin: 0;">
+            <h4 style="color: #dc2626; font-size: 0.95rem; margin-bottom: 0.5rem;">⚡ Giải Quyết Điểm Nghẽn Kho</h4>
+            <p style="font-size: 0.85rem; color: #475569;">
+              Thay vì xử lý mù theo FIFO gây trễ dây chuyền, hệ thống sắp xếp theo hạn bàn giao kết hợp rủi ro AI (AI-EDD), giải tỏa triệt để nút thắt giờ đóng xe.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRANG 3: DỮ LIỆU & KIỂM TOÁN (DATA & AUDIT) -->
+    <section id="data" class="tab-pane">
+      <div class="card">
+        <h2 class="card-title">Nguồn Gốc & Tính Toàn Vẹn Của Dữ Liệu Olist</h2>
+        <div class="alert alert-info">
+          <span>ℹ️</span>
+          <div>
+            Dữ liệu gốc được tải từ Kaggle <code>olistbr/brazilian-ecommerce</code> (Version 2). 
+            Tuân thủ tuyệt đối Quy tắc R1: Mã nguồn chỉ đọc, không sửa, không ghi đè bất kỳ file CSV thô nào.
+          </div>
+        </div>
+
+        <h3 style="font-size: 1rem; margin: 1rem 0 0.5rem 0;">Mã Băm Toàn Vẹn SHA256 (5 Tệp Tin Gốc)</h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Tên tập tin CSV</th>
+                <th>Mã băm SHA256 kiểm chứng</th>
+              </tr>
+            </thead>
+            <tbody id="table-sha256"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 class="card-title">Phễu Lọc Dữ Liệu Chuẩn Tắc (Mục 3)</h3>
+          <p style="font-size: 0.85rem; margin-bottom: 0.75rem;">Loại bỏ đơn hủy, đơn nhiều người bán và cắt cửa sổ chống rò rỉ kiểm duyệt phải:</p>
+          <div style="background:#f8fafc; padding: 1rem; border-radius: 6px; font-family: monospace; font-size: 0.85rem; border: 1px solid var(--border);">
+            99,441 đơn thô ban đầu<br>
+            └── 95,180 đơn (delivered, 1 seller, đủ 3 mốc thời gian)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;└── <strong>88,526 đơn Cohort (2017-01-01 đến 2018-07-31)</strong><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Train Fit: 55,808 đơn (2017-01-05 → 2018-02-27)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Validation: 13,953 đơn (2018-02-27 → 2018-04-30)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Test Khóa: 18,765 đơn (2018-05-01 → 2018-07-31)
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Ghi Nhận Lỗi Logic Thời Gian (Không Xóa)</h3>
+          <p style="font-size: 0.85rem; margin-bottom: 0.75rem;">Theo Mục 3, các lỗi logic trong dữ liệu thật được ghi log và gắn cờ <code>ts_anomaly</code>, tuyệt đối không tùy tiện xóa bỏ:</p>
+          <ul style="font-size: 0.88rem; padding-left: 1.25rem; line-height: 1.8;">
+            <li><strong>166 đơn</strong> có ngày giao vận tải trước ngày đặt mua (<code>carrier &lt; purchase</code>).</li>
+            <li><strong>23 đơn</strong> có ngày khách nhận trước ngày giao vận tải (<code>customer &lt; carrier</code>).</li>
+            <li><strong>117 đơn</strong> trong cohort mang cờ cảnh báo <code>ts_anomaly</code>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 class="card-title">Số Lượng Đơn Hàng Theo Tháng</h3>
+          <canvas id="chart-eda-orders" height="180"></canvas>
+        </div>
+        <div class="card">
+          <h3 class="card-title">Cú Sốc Trễ & Kiểm Duyệt Phải (Right-Censoring)</h3>
+          <canvas id="chart-delay-shock" height="180"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRANG 4: MÔ HÌNH (MODEL & NO FREE LUNCH) -->
+    <section id="model" class="tab-pane">
+      <div class="card">
+        <h2 class="card-title">So Sánh Mô Hình Lõi & Baseline (Định Lý No Free Lunch - Bước 12)</h2>
+        <p style="font-size: 0.88rem; margin-bottom: 1rem;">
+          Đo lường trên cùng tập Test (18,765 đơn) được chia theo chuỗi thời gian độc lập. 
+          Mọi thuật toán ML lõi được lập trình thuần túy bằng NumPy (không dùng <code>scikit-learn</code> trong <code>src/</code>):
+        </p>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Tên mô hình</th>
+                <th>Vai trò nghiên cứu</th>
+                <th>Test ROC-AUC</th>
+                <th>Test PR-AUC</th>
+                <th>Test Brier Score</th>
+              </tr>
+            </thead>
+            <tbody id="table-models-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 class="card-title">Biểu Đồ So Sánh Năng Lực Xếp Hạng (ROC-AUC)</h3>
+          <canvas id="chart-models-auc" height="200"></canvas>
+        </div>
+        <div class="card">
+          <h3 class="card-title">Độ Quan Trọng Đặc Trưng (Feature Importance)</h3>
+          <div class="table-responsive" style="max-height: 260px; overflow-y: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Đặc trưng</th>
+                  <th>Gini Importance (Tree)</th>
+                  <th>Permutation Imp (Val)</th>
+                </tr>
+              </thead>
+              <tbody id="table-features-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">Bảng 5 Vòng Lặp Cải Tiến (Iterations 1 → 5)</h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Vòng lặp</th>
+                <th>Mô hình</th>
+                <th>Đặc trưng sử dụng</th>
+                <th>Test ROC-AUC</th>
+                <th>Test PR-AUC</th>
+                <th>Ghi chú & Ý nghĩa nghiệp vụ</th>
+              </tr>
+            </thead>
+            <tbody id="table-iterations-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRANG 5: DEMO TƯƠNG TÁC (INTERACTIVE INFERENCE DEMO) -->
+    <section id="demo" class="tab-pane">
+      <div class="card">
+        <h2 class="card-title">Demo Tương Tác Ra Quyết Định Đơn Hàng (Inference Engine)</h2>
+        <div class="alert alert-sim">
+          <span>🧪</span>
+          <div>
+            Mô hình suy luận cây quyết định được thực thi trực tiếp trên trình duyệt bằng JavaScript (<code>web/js/tree.js</code>), 
+            đảm bảo khớp tuyệt đối 100% với mã Python. Tích hợp lớp luật FEFO giả định theo Mục 4.7 và <code>ASSUMPTIONS.md</code>.
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- Input Form -->
+          <div style="background:#f8fafc; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border);">
+            <div class="form-group">
+              <label for="select-sample-order">Chọn đơn mẫu thật từ tập Test (50 đơn ẩn danh):</label>
+              <select id="select-sample-order">
+                <option value="">-- Hoặc nhập tay tham số bên dưới --</option>
+              </select>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="inp-min-to-limit">Giờ đến hạn bàn giao (min_to_limit_h):</label>
+                <input type="number" id="inp-min-to-limit" value="72">
+              </div>
+              <div class="form-group">
+                <label for="inp-sla-days">Cam kết giao khách (sla_days):</label>
+                <input type="number" id="inp-sla-days" value="18">
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="inp-seller-han-rate">Tỷ lệ trễ lịch sử seller (seller_han_rate):</label>
+                <input type="number" step="0.01" id="inp-seller-han-rate" value="0.12">
+              </div>
+              <div class="form-group">
+                <label for="inp-seller-hist-n">Số đơn lịch sử của seller (seller_hist_n):</label>
+                <input type="number" id="inp-seller-hist-n" value="35">
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="inp-seller-24h">Đơn seller nhận trong 24h (seller_24h):</label>
+                <input type="number" id="inp-seller-24h" value="3">
+              </div>
+              <div class="form-group">
+                <label for="inp-vol">Thể tích kiện hàng (cm³ - vol):</label>
+                <input type="number" id="inp-vol" value="4800">
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="inp-price">Giá trị đơn hàng (BRL):</label>
+                <input type="number" id="inp-price" value="120">
+              </div>
+              <div class="form-group">
+                <label for="inp-fefo-days" style="color: #7c3aed;">Hạn dùng còn lại (ngày - FEFO giả định):</label>
+                <input type="number" id="inp-fefo-days" placeholder="Ví dụ: 2 (nếu <=3 sẽ gắn cờ)">
+              </div>
+            </div>
+
+            <button id="btn-predict-order" class="btn" style="width: 100%; margin-top: 0.5rem;">
+              🚀 Phân Tích Rủi Ro & Ra Quyết Định
+            </button>
+          </div>
+
+          <!-- Output Panel -->
+          <div style="background: white; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 1rem; color: var(--primary);">Kết Quả Đánh Giá Rủi Ro AI</h3>
+
+              <div style="margin-bottom: 1.25rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem; font-size: 0.85rem;">
+                  <span>Điểm rủi ro trễ bàn giao (p):</span>
+                  <strong id="demo-risk-score" style="font-size: 1.1rem; color: #1e3a8a;">--</strong>
+                </div>
+                <div style="width: 100%; background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden;">
+                  <div id="demo-risk-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444); transition: width 0.3s;"></div>
+                </div>
+              </div>
+
+              <div class="grid-2" style="margin-bottom: 1rem;">
+                <div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">MỨC ĐỘ ƯU TIÊN:</div>
+                  <div style="margin-top: 0.25rem;"><span id="demo-prio-badge" class="badge">--</span></div>
+                </div>
+                <div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">CẢNH BÁO TRƯỞNG CA:</div>
+                  <div id="demo-supervisor-flag" style="margin-top: 0.25rem;">--</div>
+                </div>
+              </div>
+
+              <div style="border-top: 1px dashed var(--border); padding-top: 0.75rem; font-size: 0.85rem;">
+                <span style="color: var(--text-muted);">Đối chiếu kết quả giao hàng thực tế:</span>
+                <div id="demo-actual-result" style="margin-top: 0.2rem;">--</div>
+              </div>
+            </div>
+
+            <!-- Decision Path -->
+            <div>
+              <h4 style="font-size: 0.85rem; font-weight: bold; margin-top: 1rem; color: var(--text-muted); text-transform: uppercase;">
+                Đường đi giải thích rẽ nhánh cây (Decision Path):
+              </h4>
+              <div id="demo-decision-path" class="path-box" style="max-height: 180px; overflow-y: auto;">
+                <p style="font-size: 0.8rem; color: #94a3b8;">Chọn đơn hoặc bấm phân tích để xem các bước rẽ nhánh...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRANG 6: MÔ PHỎNG HÀNG ĐỢI KHO (SIMULATION PLAYGROUND) -->
+    <section id="simulation" class="tab-pane">
+      <div class="card">
+        <h2 class="card-title">Mô Phỏng Hàng Đợi Kho As-Is vs To-Be (Mục 7)</h2>
+        <p style="font-size: 0.88rem; margin-bottom: 1.25rem;">
+          Mô phỏng 18,765 đơn hàng thật qua hàng đợi với 3 nhân viên, ca làm việc 08:00–17:00. 
+          So sánh hiệu quả giữa <strong>FIFO</strong> (As-Is), <strong>EDD</strong> (Baseline kinh điển), <strong>AI-EDD</strong> (To-Be) và <strong>AI Level-First</strong> (Chính sách sai lầm).
+        </p>
+
+        <div style="display: flex; gap: 1.5rem; background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1.25rem; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 200px;">
+            <label for="sim-select-k">Số nhân viên xử lý kho (K):</label>
+            <select id="sim-select-k">
+              <option value="3" selected>K = 3 nhân viên (Hiệu chuẩn thực tế)</option>
+              <option value="4">K = 4 nhân viên</option>
+              <option value="5">K = 5 nhân viên</option>
+              <option value="6">K = 6 nhân viên</option>
+            </select>
+          </div>
+          <div style="flex: 1; min-width: 200px;">
+            <label for="sim-select-factor">Hệ số thời gian xử lý đơn (Công suất):</label>
+            <select id="sim-select-factor">
+              <option value="1.0" selected>100% thời gian cơ sở (6p + 3p/món)</option>
+              <option value="0.9">90% thời gian (Tăng tốc 10%)</option>
+              <option value="0.8">80% thời gian (Tăng tốc 20%)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Chính sách</th>
+                    <th>Tỷ lệ trễ hạn</th>
+                    <th>Tỷ lệ đúng hạn</th>
+                    <th>Lead time TB</th>
+                    <th>Lead time p95</th>
+                  </tr>
+                </thead>
+                <tbody id="table-sim-body"></tbody>
+              </table>
+            </div>
+
+            <div class="alert alert-warning" style="margin-top: 1rem;">
+              <span>⚠️</span>
+              <div>
+                <strong>Cảnh báo thực nghiệm (Mục 7.4):</strong> Khi áp dụng AI sai cách theo kiểu "làm hết đơn rủi ro P1 rồi mới đến P2/P3, bỏ qua hạn bàn giao" (AI Level-first), 
+                tỷ lệ trễ vọt lên <strong>11.6%</strong> (tệ hơn cả FIFO 7.2%). Cần phải kết hợp hạn bàn giao (AI-EDD).
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <canvas id="chart-sim-comparison" height="190"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRANG 7: RỦI RO & QUẢN TRỊ (RISK MANAGEMENT) -->
+    <section id="risk" class="tab-pane">
+      <div class="card">
+        <h2 class="card-title">Quản Trị Rủi Ro Khi AI Sai & Tối Ưu Hóa Chi Phí (Mục 7 & 8)</h2>
+        
+        <div class="grid-2">
+          <!-- Cost slider -->
+          <div style="background:#f8fafc; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border);">
+            <h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 1rem; color: var(--primary);">
+              Tối Ưu Ngưỡng Quyết Định Theo Chi Phí ($C_{FN} \times FN + C_{FP} \times FP$)
+            </h3>
+
+            <div class="form-group">
+              <label for="slider-cfn">Chi phí đơn trễ bị bỏ sót ($C_{FN}$ - Trọng số phạt trễ): <strong id="txt-cfn">3.0</strong></label>
+              <input type="range" id="slider-cfn" min="1" max="10" step="0.5" value="3.0">
+            </div>
+
+            <div class="form-group">
+              <label for="slider-cfp">Chi phí báo động nhầm ($C_{FP}$ - Chi phí kiểm tra oan): <strong id="txt-cfp">1.0</strong></label>
+              <input type="range" id="slider-cfp" min="0.5" max="5" step="0.5" value="1.0">
+            </div>
+
+            <div style="background: white; padding: 1rem; border-radius: 6px; border: 1px solid var(--border); margin-top: 1rem;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                <span>Tổng chi phí tổn thất tối thiểu:</span>
+                <strong id="opt-cost-val" style="color: #dc2626;">--</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                <span>Ngưỡng phân loại tối ưu tương ứng:</span>
+                <strong id="opt-thr-val" style="color: #2563eb;">--</strong>
+              </div>
+            </div>
+
+            <!-- Confusion matrix representation -->
+            <div style="margin-top: 1.25rem;">
+              <div style="font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem;">Ma Trận Nhầm Lẫn Tại Ngưỡng Tối Ưu:</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; text-align: center; font-size: 0.82rem;">
+                <div style="background:#d1fae5; padding: 0.6rem; border-radius: 4px;">
+                  <div>True Negative (TN)</div>
+                  <strong id="opt-cm-tn" style="font-size: 1rem;">--</strong>
+                </div>
+                <div style="background:#fee2e2; padding: 0.6rem; border-radius: 4px;">
+                  <div>False Positive (FP)</div>
+                  <strong id="opt-cm-fp" style="font-size: 1rem; color: #dc2626;">--</strong>
+                </div>
+                <div style="background:#fef3c7; padding: 0.6rem; border-radius: 4px;">
+                  <div>False Negative (FN)</div>
+                  <strong id="opt-cm-fn" style="font-size: 1rem; color: #b45309;">--</strong>
+                </div>
+                <div style="background:#dbeafe; padding: 0.6rem; border-radius: 4px;">
+                  <div>True Positive (TP)</div>
+                  <strong id="opt-cm-tp" style="font-size: 1rem; color: #1d4ed8;">--</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Triage Chart -->
+          <div>
+            <h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 1rem; color: var(--primary);">
+              Đường Cong Triage Recall@k (Khả Năng Bắt Đơn Trễ Sớm)
+            </h3>
+            <canvas id="chart-triage-recall" height="230"></canvas>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.75rem;">
+              💡 <strong>Giá trị thực tiễn:</strong> Nếu kho chỉ có nhân lực để kiểm tra <strong>top 15%</strong> đơn có nguy cơ cao nhất, 
+              mô hình Cây AI bắt được <strong>38.2%</strong> tổng số đơn trễ thật (so với chỉ 12.0% của FIFO và 13.0% của Slack).
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRANG 8: TÀI LIỆU & ĐẠO ĐỨC (ETHICS & REFERENCES) -->
+    <section id="ethics" class="tab-pane">
+      <div class="card">
+        <h2 class="card-title">Đạo Đức Dữ Liệu, Quyền Riêng Tư & Minh Bạch Sử Dụng AI</h2>
+        
+        <div class="grid-2">
+          <div>
+            <h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 0.75rem; color: var(--primary);">
+              1. Quyền Riêng Tư & Giấy Phép Dữ Liệu Olist
+            </h3>
+            <p style="font-size: 0.88rem; line-height: 1.7; color: #475569; margin-bottom: 0.75rem;">
+              • Dữ liệu công khai Olist tuân thủ giấy phép phi thương mại / nghiên cứu khoa học.<br>
+              • Toàn bộ định danh cá nhân đã được nhà phát hành mã hóa băm (MD5/SHA).<br>
+              • Trên Dashboard demo, hệ thống tiếp tục ẩn danh rút gọn mã đơn (ví dụ <code>ORD-001 (b06d6a...)</code>), tuyệt đối không để lộ thông tin nhạy cảm của khách hàng hay đối tác bán lẻ.
+            </p>
+
+            <h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 0.75rem; color: var(--primary); margin-top: 1.25rem;">
+              2. Minh Bạch Khi Sử Dụng AI (AI Usage Log - Quy Tắc R5)
+            </h3>
+            <p style="font-size: 0.88rem; line-height: 1.7; color: #475569;">
+              Toàn bộ quá trình trợ lý AI hỗ trợ được ghi chép minh bạch trong tệp <a href="../AI_USAGE_LOG.md" target="_blank" style="color: #2563eb; font-weight: bold;">AI_USAGE_LOG.md</a>. 
+              Mã nguồn học máy lõi được lập trình thuần túy bằng NumPy, kết quả thực nghiệm trung thực, công khai đầy đủ các hạn chế và không bịa đặt số liệu.
+            </p>
+          </div>
+
+          <div>
+            <h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 0.75rem; color: var(--primary);">
+              3. Danh Mục Tài Liệu Tham Khảo Học Thuật (Tối Thiểu 3 Tài Liệu)
+            </h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+              Tuân thủ Mục 8.2 & Mục 10 (Điều cấm 9: Cấm AI tự bịa tài liệu tham khảo), danh mục để khung chuẩn để nhóm tự điền các bài báo học thuật đã tra cứu:
+            </p>
+
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 6px; border: 1px solid var(--border); font-size: 0.85rem; line-height: 1.8;">
+              <ol style="padding-left: 1.2rem;">
+                <li><code>[NHÓM ĐIỀN: Tác giả, Năm, Tên bài báo về quản trị hàng đợi kho / EDD, Tạp chí / Nguồn xuất bản]</code></li>
+                <li><code>[NHÓM ĐIỀN: Tác giả, Năm, Tên bài báo về ứng dụng Machine Learning dự đoán trễ giao hàng E-commerce, Tạp chí / Nguồn]</code></li>
+                <li><code>[NHÓM ĐIỀN: Tác giả, Năm, Tên bài báo về mô hình Decision Tree / Phân loại rủi ro chuỗi cung ứng, Tạp chí / Nguồn]</code></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div style="max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+      <div>Đồ án CK10 (E-logistics) — Hệ thống Ra Quyết Định Tự Động Hóa Kho</div>
+      <div>Dữ liệu: Olist Brazilian E-Commerce • Triển khai: GitHub Pages Offline-Ready</div>
+    </div>
+  </footer>
+
+  <!-- App Script -->
+  <script src="js/tree.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+

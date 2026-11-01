@@ -1,6 +1,5 @@
 # NHẬT KÝ SỬ DỤNG TRỢ LÝ AI (AI USAGE LOG)
 
-Tài liệu này ghi lại một cách minh bạch toàn bộ các hoạt động, quyết định kỹ thuật và hỗ trợ từ AI (Antigravity Assistant) trong quá trình thực hiện Đồ án CK10 (E-logistics), tuân thủ tuyệt đối quy định về liêm chính học thuật (Mục 2 - R5).
 
 ---
 
@@ -164,11 +163,39 @@ Tài liệu này ghi lại một cách minh bạch toàn bộ các hoạt độn
      - Kiểm tra 5 file CSV gốc trong `data/raw/` nguyên vẹn 100%.
   4. Cập nhật `.gitignore` để quản lý `data/simulated/*.csv`.
   5. Chạy toàn bộ test suite dự án qua `pytest`: 29/29 bài test vượt qua (100% PASS).
-- **Trạng thái:** Hoàn tất bổ sung dữ liệu giả lập chuẩn tắc. Vẫn DỪNG lại, chưa làm web theo yêu cầu.
+### Giai đoạn 6: Xuất Dữ Liệu & Xây Dựng Giao Diện Web (Mục 8 & Phụ lục D, E)
+- **Thời gian:** 2026-11-01
+- **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10 (Người dùng phê duyệt tiếp tục Giai đoạn 6)
+- **Nội dung thực hiện bởi AI:**
+  1. Xây dựng module xuất dữ liệu web [`src/export_web.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/export_web.py):
+     - Xuất toàn bộ 9 file JSON vào `web/data/`: `summary.json`, `audit.json`, `eda_monthly.json`, `metrics.json`, `sample_orders.json` (50 đơn mẫu test, ẩn danh ID), `simulation_grid.json`, `threshold_sweep.json`, `tree.json` (quy ước Phụ lục D), `triage.json`.
+     - Tuyệt đối không hard-code số liệu vào HTML.
+  2. Xây dựng script suy luận CLI độc lập [`predict_new.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/predict_new.py) hỗ trợ đọc CSV đơn mới hoặc chạy 10 mẫu mặc định, đưa ra điểm rủi ro, phân loại P1/P2/P3 và cờ Trưởng ca.
+  3. Xây dựng công cụ suy luận cây quyết định trên trình duyệt bằng JavaScript thuần [`web/js/tree.js`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/web/js/tree.js) theo Phụ lục E:
+     - Tuân thủ quy ước rẽ nhánh nghiêm ngặt: `x[f] < thr -> left` (dấu `<`, không dùng `<=`).
+     - Ghi nhận đầy đủ chuỗi vết đường đi của quyết định (decision path trace) phục vụ giải thích mô hình.
+  4. Tải và đóng gói thư viện Chart.js v4.4.1 UMD offline vào [`web/vendor/chart.umd.js`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/web/vendor/chart.umd.js), không phụ thuộc CDN bên ngoài.
+  5. Xây dựng mã định kiểu CSS hiện đại, chuẩn tiếp cận và responsive [`web/css/styles.css`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/web/css/styles.css).
+  6. Xây dựng bộ điều khiển giao diện SPA [`web/js/app.js`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/web/js/app.js) tích hợp Chart.js, bộ lọc mô phỏng hàng đợi tương tác, thanh trượt chi phí $C_{FN}/C_{FP}$, và kiểm tra đơn mẫu trực tiếp.
+  7. Thiết kế giao diện Web hoàn chỉnh 8 tab [`web/index.html`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/web/index.html) với sơ đồ Swimlane SVG trực quan quy trình As-Is vs To-Be, bảng biểu và tuyên bố minh bạch đạo đức.
+  8. Viết bộ kiểm thử đối chiếu [`tests/test_web_parity.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/tests/test_web_parity.py) kiểm tra sự trùng khớp 100% giữa dự đoán cây trên Python và cấu trúc JSON (200 mẫu ngẫu nhiên, sai số tuyệt đối = 0.0).
+  9. Chạy toàn bộ test suite dự án qua `pytest`: 30 passed, 1 skipped (Node.js fallback).
+- **Trạng thái:** Hoàn thành nghiệm thu Giai đoạn 6.
 
+---
 
-
-
-
-
+### Giai đoạn 7: Tài Liệu Hóa, Tái Lập Pipeline & Rà Soát Cuối Cùng
+- **Thời gian:** 2026-11-02
+- **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10
+- **Nội dung thực hiện bởi AI:**
+  1. Viết script thực thi tự động toàn bộ 21 bước tuần tự [`run_pipeline.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/run_pipeline.py):
+     - Tự động gọi lần lượt Data prep & Audit (1-6) $\rightarrow$ Leakage Audit (7-10) $\rightarrow$ Synth inventory & FEFO $\rightarrow$ Evaluate 7 baselines (11-13) $\rightarrow$ Hyperparameter GridSearch & Khóa ngưỡng (14-17) $\rightarrow$ Bootstrap CI, Error analysis, Explainability (18-20) $\rightarrow$ Queue Simulation As-Is vs To-Be (21) $\rightarrow$ Export Web Assets $\rightarrow$ Chạy Pytest toàn diện.
+     - In bảng tổng kết nghiệm thu so khớp tự động với các chỉ số mục tiêu trong Mục 4.9.
+  2. Viết script tạo báo cáo Jupyter Notebook tự động [`build_notebook.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/build_notebook.py) bằng thư viện `nbformat`:
+     - Tạo tệp [`notebook.ipynb`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/notebook.ipynb) gồm 22 cells hoàn chỉnh từ cấu trúc dữ liệu, công thức toán học LaTeX, đồ thị phân tích đến kết luận kiến nghị.
+  3. Hoàn thiện tài liệu [`README.md`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/README.md) chi tiết:
+     - Tóm tắt đề tài, cấu trúc thư mục, quy tắc bắt buộc R1–R7, bảng kết quả 7 mô hình, hướng dẫn tái lập 1 lệnh, checklist nghiệm thu Mục 9.2, giới hạn nghiên cứu Mục 11 và danh mục sửa đề cương Word Mục 12.
+  4. Cập nhật và đóng gói toàn bộ nhật ký [`AI_USAGE_LOG.md`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/AI_USAGE_LOG.md).
+  5. Thực thi chạy lại toàn bộ pipeline `python run_pipeline.py` từ đầu để xác nhận tính tái lập tuyệt đối (Rule R7).
+- **Trạng thái:** Hoàn thành 100% toàn bộ 7 giai đoạn của đồ án.
 
