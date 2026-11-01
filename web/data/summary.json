@@ -1,0 +1,31 @@
+{
+  "project_title": "Thiết Kế Chuỗi Dịch Vụ Logistics Tự Động Có AI Ra Quyết Định — Nghiệp Vụ Kho (Inventory)",
+  "topic_code": "CK10 - E-logistics",
+  "dataset_name": "Olist Brazilian E-Commerce Public Dataset (Kaggle Version 2)",
+  "cohort_period": "2017-01-01 đến 2018-07-31 (88,526 đơn hàng)",
+  "core_problem": "Dự đoán nguy cơ trễ bàn giao kho (late_handover) tại thời điểm duyệt đơn để phân tầng mức độ ưu tiên P1/P2/P3 và hỗ trợ Trưởng ca xử lý.",
+  "three_kpis": {
+    "lead_time_mean_h": 33.2,
+    "lead_time_p95_h": 107.9,
+    "on_time_rate": {
+      "fifo_as_is": 92.8,
+      "edd_baseline": 99.2,
+      "ai_edd_to_be": 99.1
+    },
+    "manual_decision_rate": {
+      "as_is": 100.0,
+      "to_be": 41.06
+    }
+  },
+  "key_conclusions": [
+    "Tín hiệu dự đoán nguy cơ trễ trong Olist đến chủ yếu từ hành vi lịch sử của người bán (seller_han_rate chiếm 64% importance), không đến từ kích thước đơn hàng.",
+    "Cây quyết định xếp hạng rủi ro vượt trội hơn hẳn FIFO và Slack (Recall top-15%: 38.2% vs 12.0%), nhưng ngang bằng quy tắc 1 đặc trưng người bán. Giá trị cốt lõi của AI nằm ở tính minh bạch và gộp đặc trưng điều kiện.",
+    "Trong mô phỏng hàng đợi kho, xếp lịch theo hạn bàn giao (EDD) giảm trễ từ 7.2% xuống 0.8%. AI đóng vai trò công cụ cảnh báo (Triage) để Trưởng ca can thiệp sớm.",
+    "Áp dụng AI sai cách (AI level-first: làm hết P1 rồi mới đến P2/P3, bỏ qua hạn) gây trễ 11.6%, tệ hơn cả FIFO truyền thống (7.2%)."
+  ],
+  "limitations": [
+    "Dữ liệu Olist phản ánh sàn thương mại điện tử đa người bán, không phải kho đơn lẻ của một doanh nghiệp.",
+    "Olist không có dữ liệu thật về hạn dùng, lô hàng và tồn kho (được bổ sung minh bạch bằng lớp luật giả định trong ASSUMPTIONS.md).",
+    "Hiện tượng trôi phân phối theo thời gian khiến điểm rủi ro không phải là xác suất hiệu chuẩn tuyệt đối."
+  ]
+}

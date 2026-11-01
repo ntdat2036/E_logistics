@@ -1,5 +1,6 @@
-# Dữ liệu gốc (R1, R6, Mục 10)
+# Dữ liệu gốc và dữ liệu giả lập (R1, R6, Mục 10)
 data/raw/*.csv
+data/simulated/*.csv
 dataset/
 
 # Python cache

@@ -146,6 +146,27 @@ Tài liệu này ghi lại một cách minh bạch toàn bộ các hoạt độn
   4. Chạy toàn bộ test suite dự án qua `pytest`: 26/26 bài test vượt qua (100% PASS).
 - **Trạng thái:** Hoàn thành nghiệm thu Giai đoạn 5 (Chưa làm web, tuân thủ đúng yêu cầu).
 
+### Bổ sung Dữ liệu Giả định Kho & Minh bạch Giả định (Mục 4.7 & ASSUMPTIONS.md)
+- **Thời gian:** 2026-11-01
+- **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10
+- **Nội dung thực hiện bởi AI:**
+  1. Soạn thảo tài liệu minh bạch hóa [`ASSUMPTIONS.md`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/ASSUMPTIONS.md):
+     - Ghi nhận chi tiết các hạn chế của Olist (thiếu hạn dùng, lô hàng, tồn kho, chi phí).
+     - Trình bày bảng giả định có kiểm soát: phân nhóm `sim_shelf_life_days` (180–365 ngày cho thực phẩm, mỹ phẩm), tồn an toàn $SS = z \cdot \sigma \cdot \sqrt{L}$, tồn kho hiện tại $SOH \sim \text{Poisson}(\mu \times 7) + SS$, ca làm việc 08:00–17:00, $K=3$, chi phí phạt trễ 10% giá trị đơn, chi phí lưu kho 0.05 R$/ngày.
+     - Cam kết ranh giới: 100% cột giả lập mang tiền tố `sim_`, lưu tại `data/simulated/`, tuyệt đối không đưa vào mô hình học máy.
+  2. Viết script tạo dữ liệu [`src/synth.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/synth.py) với `SEED = 42`:
+     - Xuất `data/simulated/sku_inventory_simulated.csv` (32,951 SKU) gồm thống kê nhu cầu, tồn an toàn, tồn hiện tại và cờ nguy cơ đứt gãy.
+     - Xuất `data/simulated/orders_simulated_features.csv` (98,666 đơn) gồm ngày nhận hàng, ngày hết hạn, cờ quy tắc FEFO (`sim_fefo_priority_flag` nếu hạn còn $\le 3$ ngày) và chi phí phạt trễ giả định.
+  3. Viết bộ kiểm thử [`tests/test_synth.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/tests/test_synth.py):
+     - Kiểm tra tính tất định của seed 42.
+     - Kiểm tra mọi cột giả lập bắt buộc có tiền tố `sim_`.
+     - Kiểm tra danh sách `FEATURES` trong `src/data_prep.py` không chứa bất kỳ cột `sim_` nào.
+     - Kiểm tra 5 file CSV gốc trong `data/raw/` nguyên vẹn 100%.
+  4. Cập nhật `.gitignore` để quản lý `data/simulated/*.csv`.
+  5. Chạy toàn bộ test suite dự án qua `pytest`: 29/29 bài test vượt qua (100% PASS).
+- **Trạng thái:** Hoàn tất bổ sung dữ liệu giả lập chuẩn tắc. Vẫn DỪNG lại, chưa làm web theo yêu cầu.
+
+
 
 
 
