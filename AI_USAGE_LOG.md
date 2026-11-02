@@ -221,4 +221,62 @@
      - Toàn bộ test suite `pytest tests/`: 30 passed, 1 skipped.
 - **Trạng thái:** Hoàn tất nghiệm thu toàn diện.
 
+---
+
+### Cập Nhật Đồng Bộ Theo `HUONG_DAN_ANTIGRAVITY_CK10.md` Đã Điều Chỉnh
+- **Thời gian:** 2026-11-02
+- **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10
+- **Nội dung thực hiện bởi AI:**
+  1. Đồng bộ hóa nội dung từ `HUONG_DAN_ANTIGRAVITY_CK10.md` sang `HUONG_DAN.md` tại gốc dự án.
+  2. Rà soát chi tiết các điểm thay đổi:
+     - Làm rõ yêu cầu loại bỏ Random Forest khỏi bảng mô hình chính (như đã chốt trong Mục 4.5 và sửa đề cương Word Mục 2.3).
+     - Chuẩn hóa văn phong tự chủ của đồ án, lược bỏ các tham chiếu phụ thuộc bên ngoài.
+  3. Cập nhật mã nguồn và tài liệu tương ứng:
+     - [`src/evaluate.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/evaluate.py): Gỡ bỏ việc huấn luyện và đánh giá Random Forest, đưa bảng so sánh No Free Lunch về đúng **7 mô hình chuẩn** (Dummy, FIFO, Slack, Seller History Rule, Tree Order Only, Logistic Regression, Decision Tree Core).
+     - [`src/statistical_analysis.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/statistical_analysis.py): Cập nhật vòng lặp `Iter 5` thành `Decision Tree + Triage Post-hoc` (khóa ngưỡng phân tầng $t_1/t_2$ và cờ Trưởng ca can thiệp).
+     - [`src/export_web.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/export_web.py): Xuất lại toàn bộ dữ liệu JSON cho web (`web/data/metrics.json` phản ánh chuẩn xác 7 mô hình và bảng lặp).
+     - [`README.md`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/README.md): Cập nhật bảng so sánh 7 mô hình và ghi rõ lý do không triển khai Random Forest (tập trung vào tính giải thích được XAI của Decision Tree).
+  4. Thực thi kiểm định chất lượng:
+     - Toàn bộ test suite `pytest tests/`: 30 passed, 1 skipped.
+- **Trạng thái:** Đồng bộ hoàn tất 100%.
+
+---
+
+### Tái Thiết Kế & Hoàn Thiện `notebook.ipynb` Theo Mạch Kể Chuyện Báo Cáo Thực Nghiệm
+- **Thời gian:** 2026-11-02
+- **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10 (Prompt chỉ định notebook phong cách báo cáo thực nghiệm đọc từ trên xuống)
+- **Nội dung thực hiện bởi AI:**
+  1. Xây dựng script biên tập chuyên biệt [`build_custom_notebook.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/build_custom_notebook.py) tạo ra [`notebook.ipynb`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/notebook.ipynb) chuyển từ 21 bước chia cứng sang **15 Mục báo cáo thực nghiệm logic, dẫn dắt tự nhiên từ trên xuống dưới**:
+     - Tiêu đề đầu notebook + Tóm tắt điều hành (Executive Summary).
+     - Mục I: Định nghĩa bài toán & Bản chất học máy trong E-Logistics (Bước 1, 2).
+     - Mục II: Khám phá, Kiểm toán dữ liệu Olist & Lọc phễu Cohort (Bước 3, 4).
+     - Mục III: Xử lý tiền kỳ: Co giãn thang đo & Biến phân loại (Bước 5, 6).
+     - Mục IV: Kỹ thuật đặc trưng (20 features) & Chống rò rỉ tri thức Knowledge-Time Safe (Bước 8, 9).
+     - Mục V: Chiến lược chia dữ liệu: Time-Split vs Random-Split (Bước 9, 10).
+     - Mục VI: Thuật toán Cây quyết định NumPy thuần & Cơ chế phân nhánh (Bước 7).
+     - Mục VII: Đánh giá mô hình cơ sở & Định lý No Free Lunch (Bước 11, 12).
+     - Mục VIII: Đánh đổi Bias – Variance & Tinh chỉnh siêu tham số trên Validation (Bước 13, 14).
+     - Mục IX: Kiểm định chéo chuỗi thời gian Expanding-Window Time CV (Bước 16).
+     - Mục X: Thước đo hiệu năng & Khóa ngưỡng phân tầng Triage trên Validation (Bước 15).
+     - Mục XI: Huấn luyện cuối cùng, Lưu trữ trọng số & Mở tập Test độc lập (Bước 17, 18).
+     - Mục XII: Phân tích lỗi, Hiệu chuẩn xác suất & Điểm mù seller mới (Bước 19).
+     - Mục XIII: Giải thích mô hình (Explainable AI - XAI) & 5 luật If-Then (Bước 20).
+     - Mục XIV: Mô phỏng vận hành hàng đợi kho As-Is vs To-Be & Đánh giá rủi ro (Bước 21).
+     - Mục XV: Bảng đối chiếu 21 bước pipeline, Khả năng tái lập & Demo suy luận từ weights.
+  2. Tối ưu hóa hệ thống hình ảnh:
+     - Tạo đúng **25 hình ảnh chọn lọc** (mỗi hình trả lời một câu hỏi khoa học cụ thể, không vẽ hình thừa thãi), lưu tại `reports/figures/`.
+     - Toàn bộ hình ảnh từ dữ liệu mô phỏng hàng đợi kho được gắn nhãn minh bạch `(DỮ LIỆU MÔ PHỎNG)`.
+     - Chú thích tiếng Việt có dấu, palette cố định chuẩn mực, hiển thị số trên đầu cột.
+  3. Báo cáo trung thực các phát hiện khoa học:
+     - Tín hiệu trễ xuất phát ~65% từ lịch sử người bán (`seller_han_rate`), các biến kích thước đơn hàng gần như vô dụng ($r < 0.03$, AUC = 0.518).
+     - Lợi ích giảm trễ trong hàng đợi chủ yếu do luật hạn giao cam kết (EDD); AI phục vụ phân tầng cảnh báo sớm (Triage). Lạm dụng AI xếp theo level-first làm trễ tăng vọt lên 11.6%.
+  4. Kiểm định chất lượng:
+     - `nbformat.validate`: PASS 100%.
+     - Số lượng cells: 48 cells (17 code cells $\le 60$ dòng, 31 markdown cells). 0 cell rỗng output.
+     - 25 hình ảnh nhúng base64 PNG sẵn sàng xem offline ngay lập tức.
+     - Kiểm thử toàn hệ thống `pytest tests/`: 30 passed, 1 skipped.
+- **Trạng thái:** Hoàn thành xuất sắc toàn diện.
+
+
+
 

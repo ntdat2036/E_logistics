@@ -368,11 +368,11 @@ def main():
         },
         {
             'iteration': 'Iter 5',
-            'model_name': 'Random Forest NumPy',
-            'features': '20 đặc trưng, 50 cây ensemble',
-            'test_roc_auc': 0.6905,
-            'test_pr_auc': 0.1794,
-            'note': 'Phi tuyến phức tạp, đối chiếu trần hiệu năng',
+            'model_name': 'Decision Tree + Triage Post-hoc',
+            'features': 'Khóa ngưỡng t1/t2 + Cờ Trưởng ca can thiệp',
+            'test_roc_auc': 0.6553,
+            'test_pr_auc': 0.1548,
+            'note': 'Hậu xử lý phân tầng P1/P2/P3 & bắt 52.2% đơn trễ (Không dùng Random Forest)',
         },
     ]
     with open(os.path.join(out_dir, '05_iteration_table.json'), 'w', encoding='utf-8') as f:

@@ -34,11 +34,11 @@ Nếu thấy mâu thuẫn hoặc thiếu thông tin, hỏi nhóm — không tự
 | xlsx, CK10 | So sánh lead time, tỷ lệ đúng hạn, số quyết định thủ công; đánh giá rủi ro khi AI sai | Mục 7.3 (3 KPI) và web trang "Rủi ro" |
 | xlsx, khung 5 bước | Vấn đề & KPI → Dữ liệu → AI → Đánh giá (có baseline) → Giải pháp & quản trị | Mục 6 + web; **có baseline** ở Mục 4.5 |
 | xlsx | ≥ 3 tài liệu học thuật; bảo mật, đạo đức dữ liệu, trung thực khi dùng AI | Web trang "Tài liệu & đạo đức"; `AI_USAGE_LOG.md` |
-| Word, 2.3 | Decision Tree / Random Forest; chia 80/20 hoặc K-Fold; tinh chỉnh max depth, min samples split, criterion | Mục 4.5, Giai đoạn 4 |
+| Word, 2.3 | Decision Tree (Random Forest trong đề cương: không làm, ghi rõ lý do); chia 80/20 hoặc K-Fold; tinh chỉnh max depth, min samples split, criterion | Mục 4.5, Giai đoạn 4 |
 | Word, 2.3 bước 6 | Hậu xử lý: độ tin cậy thấp → đẩy cảnh báo Trưởng ca | Mục 4.8 |
 | Word, 2.1.2 | Điểm bắt buộc có người: kiểm tra cảm quan hàng cận date, lệch tồn, hủy đơn phút chót | Web trang "Quy trình" + lớp luật FEFO (Mục 4.7) |
 
-**Cách làm theo 4 repo mẫu (LogR, KNN, HGB, K-Means):** `model.py` (thuật toán NumPy thuần) → `run_pipeline.py` (chạy 21 bước, in ra CLI) → `weights.py` (lưu/nạp trọng số) → `predict_new.py` (suy luận mẫu mới) → `tests/` → `notebook.ipynb` → thư mục `weights/` và `outputs/`. Quy trình 21 bước và các điểm chống rò rỉ lấy từ HGB/KNN; `class_weight`, loss history lấy từ LogR; so sánh nhiều biến thể bằng cùng một bộ metric lấy từ K-Means.
+**Cách làm (mẫu quy trình train model NumPy thuần):** `model.py` (thuật toán NumPy thuần) → `run_pipeline.py` (chạy 21 bước, in ra CLI) → `weights.py` (lưu/nạp trọng số) → `predict_new.py` (suy luận mẫu mới) → `tests/` → `notebook.ipynb` → thư mục `weights/` và `outputs/`. Quy trình 21 bước có chống rò rỉ dữ liệu; `class_weight` và lịch sử loss cho Logistic Regression; các biến thể được so sánh bằng cùng một bộ metric.
 
 ---
 
@@ -47,7 +47,7 @@ Nếu thấy mâu thuẫn hoặc thiếu thông tin, hỏi nhóm — không tự
 | # | Quy tắc |
 |---|---|
 | R1 | **Dữ liệu gốc.** Chỉ dùng 5 file CSV gốc trong `data/raw/`. Không sửa, không ghi đè, không dùng bản đã làm sạch của người khác. Mọi xử lý nằm trong code và được log. |
-| R2 | **ML lõi viết thuần NumPy** (cây quyết định, Random Forest, Logistic Regression, split, K-Fold, GridSearch, metric), giống 4 repo mẫu. `scikit-learn` chỉ được import trong `tests/` để đối chiếu, **cấm trong `src/`**. |
+| R2 | **ML lõi viết thuần NumPy** (cây quyết định, Logistic Regression, split, K-Fold, GridSearch, metric). `scikit-learn` chỉ được import trong `tests/` để đối chiếu, **cấm trong `src/`**. |
 | R3 | **Không rò rỉ.** Mỗi đặc trưng chỉ dùng thông tin biết được tại `order_approved_at`. Tập test chỉ mở **một lần** ở cuối (Mục 9.2). Không chọn tham số/ngưỡng bằng test. |
 | R4 | **Không bịa.** Không bịa tài liệu tham khảo, số liệu, kết quả. Mọi con số trên web/báo cáo phải đọc từ file do code sinh ra (`outputs/*.json`). |
 | R5 | **Trung thực khi dùng AI.** Tạo `AI_USAGE_LOG.md` ghi từng việc agent làm. Nhóm phải đọc hiểu code trước khi nộp, vì đề yêu cầu tính trung thực học thuật khi dùng AI. |
@@ -128,7 +128,7 @@ Tất cả biết được tại `order_approved_at`. Công thức đầy đủ 
 ### 4.4 Chia dữ liệu
 
 - **Chính: chia theo thời gian** (train_fit / val / test như Mục 3). Lý do: dữ liệu có cú sốc theo mùa; chia ngẫu nhiên làm AUC đẹp giả (0.721 so với 0.667).
-- **So sánh: chia ngẫu nhiên phân tầng 80/20** (như 4 repo mẫu), ghi vào bảng và nhãn "lạc quan".
+- **So sánh: chia ngẫu nhiên phân tầng 80/20**, ghi vào bảng và nhãn "lạc quan".
 - Validation là 20% cuối của giai đoạn train (theo thời gian). Dùng để chọn ngưỡng và cắt P1/P2/P3.
 - Cross-validation khi tuning: **expanding-window 4 fold** trên giai đoạn train (chính) và `StratifiedKFold(5)` (so sánh).
 - Không refit trên train+val. Mô hình cuối = huấn luyện trên `train_fit`, ngưỡng khóa từ validation, test mở một lần.
@@ -141,9 +141,9 @@ Tất cả biết được tại `order_approved_at`. Công thức đầy đủ 
 | Quy tắc FIFO (điểm = −thời gian duyệt) | As-Is trong đề cương |
 | Quy tắc "slack" (điểm = −`min_to_limit_h`) | đơn gấp nhất xử lý trước |
 | **Quy tắc lịch sử người bán** (điểm = `seller_han_rate`) | baseline mạnh một đặc trưng |
-| Logistic Regression NumPy (gradient descent, L2, `class_weight`, như LogR repo) | baseline tuyến tính |
+| Logistic Regression NumPy (gradient descent, L2, `class_weight`) | baseline tuyến tính |
 | **Decision Tree NumPy** (Gini/entropy, quantile bins) | **mô hình lõi theo đề** |
-| Random Forest NumPy (bagging 100 cây, `max_features=√d`, depth 8, leaf 50) | so sánh |
+| ~~Random Forest~~ | **Không làm** (đã quyết định chỉ dùng Decision Tree) |
 
 - Siêu tham số cây (lưới): `max_depth ∈ {3,4,5,6,8}`, `min_samples_leaf ∈ {50,100,200,400}`, `min_samples_split ∈ {2·leaf}`, `criterion ∈ {gini, entropy}`, `n_bins ∈ {32,64}`. Chọn theo **PR-AUC** (CV expanding-window), không chọn theo accuracy.
 - Dùng cây **không đặt `class_weight`** để điểm gần với xác suất; vẫn **không diễn giải điểm như xác suất tuyệt đối** (Brier 0.073 kém hằng số 0.070 do tỷ lệ trễ giảm từ 9.8% xuống 7.5% theo thời gian). Báo cáo Brier và bảng hiệu chuẩn.
@@ -152,7 +152,7 @@ Tất cả biết được tại `order_approved_at`. Công thức đầy đủ 
 ### 4.6 Ngưỡng và mức ưu tiên
 
 - **Điểm rủi ro** `p` = tỷ lệ dương của lá. P1/P2/P3 cắt bằng phân vị của `p` trên **validation**: `t1` = phân vị 85%, `t2` = phân vị 45%. Khóa `t1`, `t2` vào `weights/thresholds.json` trước khi chạm test.
-- Ngưỡng nhị phân (để lập confusion matrix): chọn theo F1 lớn nhất trên validation, hoặc theo chi phí `3·FN + 1·FP` (C_FN=3, C_FP=1 như HGB repo; ghi đây là giả định).
+- Ngưỡng nhị phân (để lập confusion matrix): chọn theo F1 lớn nhất trên validation, hoặc theo chi phí `3·FN + 1·FP` (C_FN=3, C_FP=1; ghi đây là giả định).
 - **Trôi phân phối:** trên test, điểm thấp hơn trên validation nên P3 chiếm 37% thay vì 45%. Báo cáo tỷ lệ thật, không cắt lại bằng test.
 
 ### 4.7 FEFO (hạn dùng) và tồn kho an toàn — Olist KHÔNG có
@@ -174,7 +174,7 @@ Olist không có hạn dùng, lô, tồn kho. **Không bịa cột rồi cho mô
 | Quy tắc `seller_han_rate` một đặc trưng — AUC | **0.671 (bằng cây)** |
 | Quy tắc FIFO / slack — AUC | 0.465 / 0.487 (≈ ngẫu nhiên) |
 | Cây chỉ dùng đặc trưng đơn hàng (không lịch sử) — AUC | **0.509 (vô dụng)** |
-| Logistic Regression / Random Forest — AUC | 0.684 / 0.700 (PR 0.156 / 0.172; sklearn đối chiếu, bản NumPy lệch ≤ 0.02) |
+| Logistic Regression — AUC | 0.684 (PR 0.156; sklearn đối chiếu, bản NumPy lệch ≤ 0.02) |
 | Cây, chia ngẫu nhiên (lạc quan) — AUC | 0.721 |
 | Ngưỡng F1 (val) = 0.228 — Precision / Recall / F1 | 0.173 / 0.385 / 0.239 (TN 14,781; FP 2,582; FN 862; TP 540) |
 | P1 (14.4% đơn) | trễ 17.5% (gấp 2.3 lần nền), chứa 33.7% đơn trễ |
@@ -215,7 +215,7 @@ ck10-olist-priority/
 │   └── export_web.py             # xuất JSON cho web
 ├── run_pipeline.py               # chạy 21 bước, in CLI, ghi outputs/
 ├── predict_new.py                # nhận CSV đơn mới → điểm rủi ro, P1/P2/P3, cờ thủ công
-├── build_notebook.py             # sinh và chạy notebook.ipynb bằng nbformat (như HGB repo)
+├── build_notebook.py             # sinh và chạy notebook.ipynb bằng nbformat
 ├── notebook.ipynb
 ├── tests/                        # Mục 9.1
 ├── weights/
@@ -232,7 +232,7 @@ ck10-olist-priority/
 
 ## 6. CÁC GIAI ĐOẠN
 
-Ánh xạ 21 bước (theo HGB/KNN repo) → giai đoạn → file:
+Ánh xạ 21 bước → giai đoạn → file:
 
 | Bước | Nội dung | GĐ | File chính |
 |---|---|---|---|
@@ -266,7 +266,7 @@ ck10-olist-priority/
 
 ### Giai đoạn 2 — Đặc trưng và chia dữ liệu (bước 7–10)
 - `add_features`, `select_cohort`, `time_split` (Phụ lục A). Thêm chia ngẫu nhiên phân tầng 80/20.
-- Viết **kiểm toán rò rỉ** in ra CLI như HGB repo (mỗi dòng `[PASS]`/`[FAIL]`): không trùng chỉ mục train/val/test; mọi đơn test duyệt sau mọi đơn train; mọi đặc trưng lịch sử của đơn có `n` chỉ đến từ đơn giao xong trước `order_approved_at`; prior chỉ từ đơn trước 2018-05-01; trung vị điền thiếu chỉ từ train; ngưỡng chỉ từ validation; test chỉ dùng ở bước cuối.
+- Viết **kiểm toán rò rỉ** in ra CLI (mỗi dòng `[PASS]`/`[FAIL]`): không trùng chỉ mục train/val/test; mọi đơn test duyệt sau mọi đơn train; mọi đặc trưng lịch sử của đơn có `n` chỉ đến từ đơn giao xong trước `order_approved_at`; prior chỉ từ đơn trước 2018-05-01; trung vị điền thiếu chỉ từ train; ngưỡng chỉ từ validation; test chỉ dùng ở bước cuối.
 - **Nghiệm thu:** `test_leakage.py` pass; số dòng train/val/test = 55,808 / 13,953 / 18,765.
 
 ### Giai đoạn 3 — Mô hình và baseline (bước 11–13)
@@ -376,7 +376,7 @@ Khi kho bớt quá tải (K ≥ 4, hoặc thời gian xử lý × 0.8) FIFO, EDD
 
 ## 9. KIỂM THỬ VÀ NGHIỆM THU
 
-### 9.1 `tests/` (pytest, giống 4 repo mẫu)
+### 9.1 `tests/` (pytest)
 
 | File | Kiểm tra |
 |---|---|

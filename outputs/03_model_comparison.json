@@ -251,38 +251,5 @@
       "seller_late_rate": 0.0546,
       "lane_late_rate": 0.0
     }
-  },
-  "8_Random_Forest": {
-    "role": "So sánh phi tuyến phức tạp (50 cây, depth 8, leaf 50)",
-    "val": {
-      "roc_auc": 0.7385,
-      "pr_auc": 0.1715,
-      "brier": 0.0679,
-      "accuracy": 0.925,
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1": 0.0,
-      "confusion_matrix": {
-        "tn": 12906,
-        "fp": 0,
-        "fn": 1047,
-        "tp": 0
-      }
-    },
-    "test": {
-      "roc_auc": 0.6905,
-      "pr_auc": 0.1794,
-      "brier": 0.0688,
-      "accuracy": 0.9253,
-      "precision": 0.5,
-      "recall": 0.0007,
-      "f1": 0.0014,
-      "confusion_matrix": {
-        "tn": 17362,
-        "fp": 1,
-        "fn": 1401,
-        "tp": 1
-      }
-    }
   }
 }

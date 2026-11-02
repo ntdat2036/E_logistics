@@ -34,7 +34,6 @@ from src.data_prep import (
 )
 from src.model import (
     DecisionTree,
-    RandomForest,
     LogisticRegression,
     StandardScaler,
     accuracy_score,
@@ -86,8 +85,8 @@ def evaluate_predictions(y_true, y_score, threshold=0.5):
     }
 
 
-def run_model_comparison(d_cohort, tr_fit, val_idx, test_idx, out_dir='outputs', n_rf_trees=50):
-    """Chạy so sánh 7 mô hình No Free Lunch (Mục 4.5) trên cùng một split."""
+def run_model_comparison(d_cohort, tr_fit, val_idx, test_idx, out_dir='outputs'):
+    """Chạy so sánh 7 mô hình No Free Lunch (Mục 4.5) trên cùng một split (Không dùng Random Forest)."""
     os.makedirs(out_dir, exist_ok=True)
     d_filled = fill_train_median(d_cohort, tr_fit)
 
@@ -183,24 +182,6 @@ def run_model_comparison(d_cohort, tr_fit, val_idx, test_idx, out_dir='outputs',
         },
     }
 
-    # 8. Random Forest thuần NumPy
-    rf = RandomForest(
-        n_estimators=n_rf_trees,
-        max_depth=8,
-        min_samples_leaf=50,
-        max_features='sqrt',
-        criterion='gini',
-        random_state=42,
-    )
-    rf.fit(X_tr, y_tr)
-    p_rf_va = rf.predict_proba(X_va)
-    p_rf_te = rf.predict_proba(X_te)
-    models_eval['8_Random_Forest'] = {
-        'role': f'So sánh phi tuyến phức tạp ({n_rf_trees} cây, depth 8, leaf 50)',
-        'val': evaluate_predictions(y_va, p_rf_va),
-        'test': evaluate_predictions(y_te, p_rf_te),
-    }
-
     # Xuất file JSON
     json_path = os.path.join(out_dir, '03_model_comparison.json')
     with open(json_path, 'w', encoding='utf-8') as f:
@@ -293,7 +274,7 @@ if __name__ == '__main__':
     tr_fit, val_idx, test_idx = time_split(d_cohort)
 
     print("=== 1. Chạy so sánh 7 mô hình No Free Lunch ===")
-    eval_results = run_model_comparison(d_cohort, tr_fit, val_idx, test_idx, 'outputs', n_rf_trees=50)
+    eval_results = run_model_comparison(d_cohort, tr_fit, val_idx, test_idx, 'outputs')
 
     print("\n=== KẾT QUẢ SO SÁNH MÔ HÌNH (TEST ROC-AUC) ===")
     for k, v in eval_results.items():

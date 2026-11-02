@@ -15,7 +15,7 @@
 | Iter 2 | **Decision Tree (Order Only)** | 10 đặc trưng đơn hàng (không lịch sử) | 0.5183 | 0.0795 | Gần như vô dụng nếu thiếu lịch sử người bán |
 | Iter 3 | **Decision Tree Baseline** | 20 đặc trưng (thêm lịch sử seller/lane) | 0.6666 | 0.1541 | Tín hiệu nhảy vọt nhờ đặc trưng lịch sử |
 | Iter 4 | **Decision Tree Tuned (Final)** | 20 đặc trưng + GridSearch CV + Khóa ngưỡng | 0.6553 | 0.1548 | Mô hình lõi chuẩn hóa, kiểm soát overfitting |
-| Iter 5 | **Random Forest NumPy** | 20 đặc trưng, 50 cây ensemble | 0.6905 | 0.1794 | Phi tuyến phức tạp, đối chiếu trần hiệu năng |
+| Iter 5 | **Decision Tree + Triage Post-hoc** | Khóa ngưỡng t1/t2 + Cờ Trưởng ca can thiệp | 0.6553 | 0.1548 | Hậu xử lý phân tầng P1/P2/P3 & bắt 52.2% đơn trễ (Không dùng Random Forest) |
 
 ## 3. Kết Quả Mô Phỏng Hàng Đợi Kho As-Is vs To-Be (K=3, 100% Thời Gian)
 

@@ -43,7 +43,7 @@ ck10-olist-priority/
 ├── src/                          # Mã nguồn chính - 100% NumPy thuần (CẤM sklearn)
 │   ├── __init__.py
 │   ├── data_prep.py              # Đọc CSV, lọc phễu, tạo đặc trưng chống rò rỉ, chia tập
-│   ├── model.py                  # DecisionTree, RandomForest, LogisticRegression, Metrics
+│   ├── model.py                  # DecisionTree, LogisticRegression, BinMapper, Metrics
 │   ├── evaluate.py               # So sánh 7 mô hình No Free Lunch, quét Bias-Variance
 │   ├── train.py                  # GridSearch, Cross-Validation, khóa ngưỡng, lưu weights
 │   ├── statistical_analysis.py   # Bootstrap CI 1,000 lần, phân tích lỗi FN, giải thích cây
@@ -121,7 +121,8 @@ ck10-olist-priority/
 | **Tree (Order Only)** | 0.5445 | 0.5183 | 0.0841 | 0.0735 | Không dùng đặc trưng người bán |
 | **Decision Tree (Core)** | **0.6908** | **0.6553** | **0.1548** | **0.0711** | Mô hình chính (Cây nông depth=6) |
 | **Logistic Regression** | 0.7061 | 0.6833 | 0.1764 | 0.0700 | Chuẩn hóa Z-score + GD + L2 |
-| **Random Forest** | 0.7089 | 0.6905 | 0.1804 | 0.0695 | Ensemble 30 cây thuần NumPy |
+
+> **Quyết định không làm Random Forest:** Đồ án **quyết định chỉ dùng Decision Tree** (tuân thủ hướng dẫn Mục 4.5 và sửa đề cương Word Mục 2.3). Lý do: Mô hình ensemble làm mất đi tính minh bạch diễn giải (XAI), không thể trích xuất cây luật If-Then trực quan dạng JSON để nhúng suy luận tức thì trên trình duyệt hoặc hệ thống điều phối kho; trong khi hiệu năng Decision Tree kết hợp luật nghiệp vụ đã giải quyết trọn vẹn bài toán phân tầng rủi ro (Triage).
 
 > **Phát hiện khoa học:** Cây chỉ dùng đặc trưng đơn hàng (Tree Order Only) có AUC = 0.518 (tương đương đoán ngẫu nhiên). Nguồn tín hiệu dự báo đến 65% từ lịch sử người bán (`seller_han_rate`). Cây quyết định không hơn luật đơn biến về độ phân tách, nhưng mang lại giá trị vận hành vượt trội nhờ khả năng tích hợp đa điều kiện và phân tầng trực quan (Triage).
 
