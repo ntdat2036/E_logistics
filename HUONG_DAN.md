@@ -1,3 +1,4 @@
+# HƯỚNG DẪN CHO ANTIGRAVITY — ĐỒ ÁN CK10 (E-LOGISTICS)
 
 **Đề tài:** Thiết kế chuỗi dịch vụ logistics tự động có AI ra quyết định — nghiệp vụ kho (Inventory)
 **Sản phẩm:** Repo code (NumPy thuần) + Notebook + **Website** trình bày/demo
@@ -12,9 +13,18 @@
 3. Mục 4 và Phụ lục A–C là **kết quả đã chạy thử trên dữ liệu thật**. Nếu code của bạn ra số lệch xa Mục 4.9 thì có lỗi — tìm lỗi, **không chỉnh cho khớp**.
 4. Phụ lục A–C là code tham chiếu đã kiểm chứng (số liệu khớp từng chữ số). Được phép viết lại cho gọn/đẹp, nhưng phải qua cùng bộ test.
 
+**Prompt khởi động (dán vào Antigravity):**
+
+```
+Đọc toàn bộ file HUONG_DAN.md ở gốc dự án. Đây là đồ án nhóm môn E-logistics (CK10).
+Làm đúng theo 7 giai đoạn trong Mục 6, MỖI LẦN CHỈ 1 GIAI ĐOẠN, xong thì dừng và báo cáo.
+Bắt đầu Giai đoạn 0. Tuân thủ tuyệt đối Mục 2 (quy tắc bắt buộc) và Mục 10 (điều cấm).
+Nếu thấy mâu thuẫn hoặc thiếu thông tin, hỏi nhóm — không tự đoán.
+```
+
 ---
 
-## 1. YÊU CẦU CỦA ĐỀ 
+## 1. YÊU CẦU CỦA ĐỀ (đã đối chiếu file xlsx và đề cương Word)
 
 | Nguồn | Yêu cầu | Cách đáp ứng trong dự án |
 |---|---|---|
@@ -32,7 +42,7 @@
 
 ---
 
-## 2. QUY TẮC BẮT BUỘC 
+## 2. QUY TẮC BẮT BUỘC (KHÔNG THƯƠNG LƯỢNG)
 
 | # | Quy tắc |
 |---|---|
@@ -77,7 +87,7 @@
 
 ---
 
-## 4. THIẾT KẾ ĐÃ CHỐT 
+## 4. THIẾT KẾ ĐÃ CHỐT (KÈM BẰNG CHỨNG)
 
 ### 4.1 Bài toán và nhãn
 
