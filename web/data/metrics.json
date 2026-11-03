@@ -38,32 +38,22 @@
       "val": {
         "roc_auc": 0.5534,
         "pr_auc": 0.088,
-        "brier": 0.3388,
-        "accuracy": 0.4982,
-        "precision": 0.088,
-        "recall": 0.6074,
-        "f1": 0.1537,
-        "confusion_matrix": {
-          "tn": 6315,
-          "fp": 6591,
-          "fn": 411,
-          "tp": 636
-        }
+        "brier": "n/a (không phải xác suất)",
+        "accuracy": "n/a",
+        "precision": "n/a",
+        "recall": "n/a",
+        "f1": "n/a",
+        "confusion_matrix": null
       },
       "test": {
         "roc_auc": 0.4646,
         "pr_auc": 0.0671,
-        "brier": 0.3656,
-        "accuracy": 0.4684,
-        "precision": 0.0657,
-        "recall": 0.4629,
-        "f1": 0.1151,
-        "confusion_matrix": {
-          "tn": 8140,
-          "fp": 9223,
-          "fn": 753,
-          "tp": 649
-        }
+        "brier": "n/a (không phải xác suất)",
+        "accuracy": "n/a",
+        "precision": "n/a",
+        "recall": "n/a",
+        "f1": "n/a",
+        "confusion_matrix": null
       }
     },
     "3_Rule_Slack": {
@@ -71,32 +61,22 @@
       "val": {
         "roc_auc": 0.4813,
         "pr_auc": 0.0714,
-        "brier": 25512.2073,
-        "accuracy": 0.9249,
-        "precision": 0.0,
-        "recall": 0.0,
-        "f1": 0.0,
-        "confusion_matrix": {
-          "tn": 12905,
-          "fp": 1,
-          "fn": 1047,
-          "tp": 0
-        }
+        "brier": "n/a (không phải xác suất)",
+        "accuracy": "n/a",
+        "precision": "n/a",
+        "recall": "n/a",
+        "f1": "n/a",
+        "confusion_matrix": null
       },
       "test": {
         "roc_auc": 0.4866,
         "pr_auc": 0.0722,
-        "brier": 23816.3746,
-        "accuracy": 0.9224,
-        "precision": 0.1014,
-        "recall": 0.005,
-        "f1": 0.0095,
-        "confusion_matrix": {
-          "tn": 17301,
-          "fp": 62,
-          "fn": 1395,
-          "tp": 7
-        }
+        "brier": "n/a (không phải xác suất)",
+        "accuracy": "n/a",
+        "precision": "n/a",
+        "recall": "n/a",
+        "f1": "n/a",
+        "confusion_matrix": null
       }
     },
     "4_Rule_Seller_History": {
@@ -199,57 +179,57 @@
       }
     },
     "7_Decision_Tree_Core": {
-      "role": "Mô hình lõi theo đề (depth 5, leaf 200, thuần NumPy)",
+      "role": "Mô hình lõi tối ưu (depth 6, leaf 100, n_bins 32, thuần NumPy)",
       "val": {
-        "roc_auc": 0.7538,
-        "pr_auc": 0.1685,
-        "brier": 0.0707,
-        "accuracy": 0.9147,
-        "precision": 0.2058,
-        "recall": 0.0478,
-        "f1": 0.0775,
+        "roc_auc": 0.7471,
+        "pr_auc": 0.1743,
+        "brier": 0.0689,
+        "accuracy": 0.9145,
+        "precision": 0.188,
+        "recall": 0.042,
+        "f1": 0.0687,
         "confusion_matrix": {
-          "tn": 12713,
-          "fp": 193,
-          "fn": 997,
-          "tp": 50
+          "tn": 12716,
+          "fp": 190,
+          "fn": 1003,
+          "tp": 44
         }
       },
       "test": {
-        "roc_auc": 0.6666,
-        "pr_auc": 0.1541,
-        "brier": 0.0727,
-        "accuracy": 0.9159,
-        "precision": 0.2867,
+        "roc_auc": 0.6553,
+        "pr_auc": 0.1548,
+        "brier": 0.0711,
+        "accuracy": 0.914,
+        "precision": 0.2644,
         "recall": 0.0849,
-        "f1": 0.131,
+        "f1": 0.1285,
         "confusion_matrix": {
-          "tn": 17067,
-          "fp": 296,
+          "tn": 17032,
+          "fp": 331,
           "fn": 1283,
           "tp": 119
         }
       },
       "feature_importances": {
-        "min_to_limit_h": 0.0413,
-        "sla_days": 0.0,
-        "approve_lag_h": 0.0135,
+        "min_to_limit_h": 0.0218,
+        "sla_days": 0.0012,
+        "approve_lag_h": 0.0,
         "n_items": 0.0,
         "n_products": 0.0,
-        "price": 0.0139,
-        "freight": 0.0,
-        "freight_ratio": 0.0,
-        "weight": 0.0079,
-        "vol": 0.0224,
+        "price": 0.0,
+        "freight": 0.0064,
+        "freight_ratio": 0.0015,
+        "weight": 0.0337,
+        "vol": 0.0149,
         "same_state": 0.0,
         "cust_SP": 0.0,
-        "sell_SP": 0.0045,
-        "hour": 0.0,
-        "dow": 0.0,
-        "global_24h": 0.0508,
-        "seller_24h": 0.0633,
-        "seller_han_rate": 0.7277,
-        "seller_late_rate": 0.0546,
+        "sell_SP": 0.0,
+        "hour": 0.011,
+        "dow": 0.0019,
+        "global_24h": 0.072,
+        "seller_24h": 0.0744,
+        "seller_han_rate": 0.6674,
+        "seller_late_rate": 0.0938,
         "lane_late_rate": 0.0
       }
     }
@@ -274,7 +254,7 @@
     {
       "iteration": "Iter 3",
       "model_name": "Decision Tree Baseline",
-      "features": "20 đặc trưng (thêm lịch sử seller/lane)",
+      "features": "20 đặc trưng (thêm lịch sử seller/lane, depth 5)",
       "test_roc_auc": 0.6666,
       "test_pr_auc": 0.1541,
       "note": "Tín hiệu nhảy vọt nhờ đặc trưng lịch sử"
@@ -293,7 +273,7 @@
       "features": "Khóa ngưỡng t1/t2 + Cờ Trưởng ca can thiệp",
       "test_roc_auc": 0.6553,
       "test_pr_auc": 0.1548,
-      "note": "Hậu xử lý phân tầng P1/P2/P3 & bắt 52.2% đơn trễ (Không dùng Random Forest)"
+      "note": "Hậu xử lý phân tầng P1/P2/P3 (P1 bắt 38.9%), cờ Trưởng ca bắt 57.5% đơn trễ (Không dùng Random Forest)"
     }
   ],
   "final_test_metrics": {
@@ -339,7 +319,7 @@
         "late_captured_share": 0.2126
       }
     },
-    "triage_recall_top15_percent": 0.3816,
+    "triage_recall_top15_percent": 0.3795,
     "shift_supervisor_manual_flag": {
       "p1_share": 0.1562,
       "low_history_share": 0.2716,

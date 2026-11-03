@@ -18,7 +18,7 @@
   {
     "iteration": "Iter 3",
     "model_name": "Decision Tree Baseline",
-    "features": "20 đặc trưng (thêm lịch sử seller/lane)",
+    "features": "20 đặc trưng (thêm lịch sử seller/lane, depth 5)",
     "test_roc_auc": 0.6666,
     "test_pr_auc": 0.1541,
     "note": "Tín hiệu nhảy vọt nhờ đặc trưng lịch sử"
@@ -37,6 +37,6 @@
     "features": "Khóa ngưỡng t1/t2 + Cờ Trưởng ca can thiệp",
     "test_roc_auc": 0.6553,
     "test_pr_auc": 0.1548,
-    "note": "Hậu xử lý phân tầng P1/P2/P3 & bắt 52.2% đơn trễ (Không dùng Random Forest)"
+    "note": "Hậu xử lý phân tầng P1/P2/P3 (P1 bắt 38.9%), cờ Trưởng ca bắt 57.5% đơn trễ (Không dùng Random Forest)"
   }
 ]

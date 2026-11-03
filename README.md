@@ -86,10 +86,9 @@ ck10-olist-priority/
 ├── run_pipeline.py               # Script thực thi toàn bộ 21 bước tuần tự từ đầu
 ├── predict_new.py                # CLI suy luận đơn hàng mới từ file CSV
 ├── build_notebook.py             # Sinh notebook.ipynb bằng thư viện nbformat
-├── notebook.ipynb                # Jupyter Notebook hoàn chỉnh 22 cells
+├── notebook.ipynb                # Jupyter Notebook hoàn chỉnh 48 cells
 ├── ASSUMPTIONS.md                # Bảng giả định mô phỏng kho & tính toán tồn kho
 ├── AI_USAGE_LOG.md               # Nhật ký minh bạch hóa việc sử dụng AI (GĐ 0–7)
-├── HUONG_DAN.md                  # Tài liệu hướng dẫn thiết kế chuẩn của đồ án
 ├── requirements.txt              # Danh sách thư viện và phiên bản cụ thể
 └── pytest.ini                    # Cấu hình kiểm thử tự động
 ```
@@ -99,7 +98,7 @@ ck10-olist-priority/
 ## 3. Các Nguyên Tắc Kỹ Thuật Bắt Buộc (Rules R1 – R7)
 
 1. **R1 - Bất biến dữ liệu gốc:** Không bao giờ sửa, ghi đè hoặc commit 5 file CSV gốc trong `data/raw/`. Mã băm SHA-256 được kiểm toán tự động trước và sau mỗi lần chạy.
-2. **R2 - NumPy thuần túy trong mã nguồn:** Toàn bộ thuật toán cây quyết định, rừng ngẫu nhiên, hồi quy logistic, chuẩn hóa và độ đo trong `src/` đều viết bằng NumPy. Thư viện `scikit-learn` tuyệt đối chỉ được dùng trong `tests/` để đối soát.
+2. **R2 - NumPy thuần túy trong mã nguồn:** Toàn bộ thuật toán cây quyết định, hồi quy logistic, chuẩn hóa và độ đo trong `src/` đều viết bằng NumPy thuần. Không dùng rừng ngẫu nhiên. Thư viện `scikit-learn` tuyệt đối chỉ được dùng trong `tests/` để đối soát.
 3. **R3 - Chống rò rỉ dữ liệu (Strict Knowledge-Time):** Chỉ sử dụng thông tin phát sinh trước `order_approved_at`. Tỷ lệ trễ lịch sử của người bán chỉ tính từ các đơn hàng đã giao hoàn tất trước thời điểm duyệt đơn.
 4. **R4 - Phân chia theo chuỗi thời gian (Time-Split):** Chia cắt tại `2018-05-01`: Train Fit (55,808 đơn), Validation (13,953 đơn), Test (18,765 đơn). Không dùng chia ngẫu nhiên làm kết quả chính.
 5. **R5 - Khóa ngưỡng trước khi mở Test:** Ngưỡng $t_1, t_2, t_{F1}$ và siêu tham số chỉ được chọn và khóa cứng trên Validation. Tập Test chỉ được đánh giá duy nhất một lần ở bước cuối cùng.
@@ -114,15 +113,15 @@ ck10-olist-priority/
 
 | Mô hình | Val ROC-AUC | Test ROC-AUC | Test PR-AUC | Test Brier | Ghi chú vận hành |
 |---|:---:|:---:|:---:|:---:|---|
-| **Dummy Baseline** | 0.5000 | 0.5000 | 0.0754 | 0.0697 | Dự đoán xác suất tiên nghiệm |
-| **FIFO Baseline** | 0.5057 | 0.4646 | 0.0693 | 0.2235 | Điểm tăng dần theo thời gian đến |
-| **Slack Baseline** | 0.5401 | 0.4866 | 0.0751 | 0.2198 | Điểm nghịch đảo với thời gian đệm SLA |
-| **Seller History Rule** | 0.6974 | 0.6712 | 0.1705 | 0.0698 | Luật đơn biến `seller_han_rate` |
-| **Tree (Order Only)** | 0.5445 | 0.5183 | 0.0841 | 0.0735 | Không dùng đặc trưng người bán |
-| **Decision Tree (Core)** | **0.6908** | **0.6553** | **0.1548** | **0.0711** | Mô hình chính (Cây nông depth=6) |
-| **Logistic Regression** | 0.7061 | 0.6833 | 0.1764 | 0.0700 | Chuẩn hóa Z-score + GD + L2 |
+| **Dummy Baseline** | 0.5000 | 0.5000 | 0.0747 | 0.0697 | Dự đoán xác suất tiên nghiệm |
+| **FIFO Baseline** | 0.5534 | 0.4646 | 0.0671 | n/a (không phải xác suất) | Điểm tăng dần theo thời gian đến |
+| **Slack Baseline** | 0.4813 | 0.4866 | 0.0722 | n/a (không phải xác suất) | Điểm nghịch đảo với thời gian đệm SLA |
+| **Seller History Rule** | 0.7728 | 0.6712 | 0.1514 | 0.0680 | Luật đơn biến `seller_han_rate` |
+| **Tree (Order Only)** | 0.5348 | 0.5183 | 0.0795 | 0.0743 | Không dùng đặc trưng người bán |
+| **Logistic Regression** | 0.7463 | 0.6833 | 0.1580 | 0.2530 | Chuẩn hóa Z-score + GD + L2 |
+| **Decision Tree (Core)** | **0.7471** | **0.6553** | **0.1548** | **0.0711** | Mô hình chính (Cây nông depth=6, leaf=100) |
 
-> **Quyết định không làm Random Forest:** Đồ án **quyết định chỉ dùng Decision Tree** (tuân thủ hướng dẫn Mục 4.5 và sửa đề cương Word Mục 2.3). Lý do: Mô hình ensemble làm mất đi tính minh bạch diễn giải (XAI), không thể trích xuất cây luật If-Then trực quan dạng JSON để nhúng suy luận tức thì trên trình duyệt hoặc hệ thống điều phối kho; trong khi hiệu năng Decision Tree kết hợp luật nghiệp vụ đã giải quyết trọn vẹn bài toán phân tầng rủi ro (Triage).
+> **Quyết định không làm Random Forest:** Đồ án **quyết định chỉ dùng Decision Tree**. Lý do: Mô hình ensemble làm mất đi tính minh bạch diễn giải (XAI), không thể trích xuất cây luật If-Then trực quan dạng JSON để nhúng suy luận tức thì trên trình duyệt hoặc hệ thống điều phối kho; trong khi hiệu năng Decision Tree kết hợp luật nghiệp vụ đã giải quyết trọn vẹn bài toán phân tầng rủi ro (Triage).
 
 > **Phát hiện khoa học:** Cây chỉ dùng đặc trưng đơn hàng (Tree Order Only) có AUC = 0.518 (tương đương đoán ngẫu nhiên). Nguồn tín hiệu dự báo đến 65% từ lịch sử người bán (`seller_han_rate`). Cây quyết định không hơn luật đơn biến về độ phân tách, nhưng mang lại giá trị vận hành vượt trội nhờ khả năng tích hợp đa điều kiện và phân tầng trực quan (Triage).
 
@@ -139,10 +138,10 @@ Mô phỏng 18,765 đơn hàng trong 91 ngày tại trung tâm phân loại kho 
 
 | Chính sách điều phối | Tỷ lệ trễ | Lead time TB | Lead time p95 | Đánh giá & Rủi ro |
 |---|:---:|:---:|:---:|---|
-| **FIFO (Hiện trạng As-Is)** | **7.2%** | 33.2 h | 108.0 h | Khớp với tỷ lệ trễ thực tế của Olist (7.5%) |
-| **EDD (Luật hạn giao sớm nhất)** | **0.8%** | 33.2 h | 121.0 h | Quy tắc kinh điển, giảm 89% đơn trễ do nghẽn |
-| **AI-EDD (Đề xuất To-Be)** | **0.9%** | 33.2 h | 121.0 h | Kết hợp hạn giao và giảm trừ 24h theo điểm rủi ro |
-| **AI level-first (Ứng dụng sai)** | **11.6%** | 33.6 h | 189.0 h | **CẢNH BÁO:** Làm hết P1 rồi mới đến P2/P3 khiến trễ tăng vọt |
+| **FIFO (Hiện trạng As-Is)** | **7.2%** | 33.2 h | 107.9 h | Khớp với tỷ lệ trễ thực tế của Olist (7.5%) |
+| **EDD (Luật hạn giao sớm nhất)** | **0.8%** | 33.2 h | 121.5 h | Quy tắc kinh điển, giảm 89% đơn trễ do nghẽn |
+| **AI-EDD (Đề xuất To-Be)** | **0.9%** | 33.2 h | 121.3 h | Kết hợp hạn giao và giảm trừ 24h theo điểm rủi ro |
+| **AI level-first (Ứng dụng sai)** | **11.6%** | 33.5 h | 198.5 h | **CẢNH BÁO:** Làm hết P1 rồi mới đến P2/P3 khiến trễ tăng vọt |
 
 > **Báo cáo trung thực:** Mô phỏng chứng minh rằng sự cải thiện trễ từ 7.2% xuống 0.8% chủ yếu đến từ việc **sắp xếp theo thời hạn (EDD)**. Mô hình AI không giúp giảm trễ thêm trong hàng đợi vì AI dự báo trễ do người bán, trong khi hàng đợi giải quyết bài toán tắc nghẽn thông lượng. Lạm dụng AI bằng cách xếp đơn P1 làm trước bất chấp thời hạn cam kết (AI level-first) sẽ gây hại nghiêm trọng cho hệ thống logistics.
 
@@ -184,7 +183,7 @@ python predict_new.py
 ```
 
 ### 5.5. Tái Tạo Báo Cáo Jupyter Notebook
-Sinh lại tệp `notebook.ipynb` có đầy đủ 22 cells định dạng đẹp mắt bằng `nbformat`:
+Sinh lại tệp `notebook.ipynb` có đầy đủ 48 cells định dạng đẹp mắt bằng `nbformat`:
 ```bash
 python build_notebook.py
 ```
@@ -212,7 +211,7 @@ Truy cập trình duyệt tại địa chỉ: `http://localhost:8000`
 
 ---
 
-## 7. Các Giới Hạn Cần Lưu Ý (Mục 11 HUONG_DAN.md)
+## 7. Các Giới Hạn Cần Lưu Ý Trong Nghiên Cứu
 
 1. **Bản chất dữ liệu Olist:** Olist là sàn thương mại điện tử kết nối các người bán độc lập tại Brazil, không phải kho vận trung tâm của một doanh nghiệp duy nhất. Khái niệm "Kho (Inventory)" trong đề tài là sự ánh xạ logic nghiệp vụ vào thời gian xử lý và bàn giao của seller.
 2. **Các thuộc tính thiếu hụt:** Olist không có hạn sử dụng, lô hàng, mã vị trí kệ, tồn kho an toàn hay giờ chốt xe thực tế. Toàn bộ các biến này là mô phỏng giả lập có kiểm soát (`sim_`) và không tham gia vào mô hình huấn luyện ML.

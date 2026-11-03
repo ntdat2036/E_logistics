@@ -41,7 +41,7 @@
       "late_captured_share": 0.2126
     }
   },
-  "triage_recall_top15_percent": 0.3816,
+  "triage_recall_top15_percent": 0.3795,
   "shift_supervisor_manual_flag": {
     "p1_share": 0.1562,
     "low_history_share": 0.2716,

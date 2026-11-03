@@ -13,9 +13,9 @@
 |---|---|---|---|---|---|
 | Iter 1 | **Dummy Classifier** | Không có (đoán hằng số) | 0.5 | 0.0747 | Baseline sàn ngẫu nhiên |
 | Iter 2 | **Decision Tree (Order Only)** | 10 đặc trưng đơn hàng (không lịch sử) | 0.5183 | 0.0795 | Gần như vô dụng nếu thiếu lịch sử người bán |
-| Iter 3 | **Decision Tree Baseline** | 20 đặc trưng (thêm lịch sử seller/lane) | 0.6666 | 0.1541 | Tín hiệu nhảy vọt nhờ đặc trưng lịch sử |
+| Iter 3 | **Decision Tree Baseline** | 20 đặc trưng (thêm lịch sử seller/lane, depth 5) | 0.6666 | 0.1541 | Tín hiệu nhảy vọt nhờ đặc trưng lịch sử |
 | Iter 4 | **Decision Tree Tuned (Final)** | 20 đặc trưng + GridSearch CV + Khóa ngưỡng | 0.6553 | 0.1548 | Mô hình lõi chuẩn hóa, kiểm soát overfitting |
-| Iter 5 | **Decision Tree + Triage Post-hoc** | Khóa ngưỡng t1/t2 + Cờ Trưởng ca can thiệp | 0.6553 | 0.1548 | Hậu xử lý phân tầng P1/P2/P3 & bắt 52.2% đơn trễ (Không dùng Random Forest) |
+| Iter 5 | **Decision Tree + Triage Post-hoc** | Khóa ngưỡng t1/t2 + Cờ Trưởng ca can thiệp | 0.6553 | 0.1548 | Hậu xử lý phân tầng P1/P2/P3 (P1 bắt 38.9%), cờ Trưởng ca bắt 57.5% đơn trễ (Không dùng Random Forest) |
 
 ## 3. Kết Quả Mô Phỏng Hàng Đợi Kho As-Is vs To-Be (K=3, 100% Thời Gian)
 
@@ -26,7 +26,7 @@
 | **AI_EDD** | 0.9% | 99.1% | 33.19h | 121.28h |
 | **AI_level_first** | 11.6% | 88.4% | 33.47h | 198.46h |
 
-### Nhận định trung thực về mô phỏng (Mục 7.4):
+### Nhận định trung thực về mô phỏng vận hành hàng đợi:
 - **EDD và AI-EDD giảm mạnh trễ bàn giao từ 7.2% xuống 0.8% - 0.9%:** Điều này chứng minh quy tắc sắp xếp theo hạn bàn giao (EDD) giải quyết rất tốt vấn đề nghẽn hàng đợi.
 - **AI-EDD không hơn EDD:** Điểm rủi ro dự đoán trễ do hành vi người bán, trong khi mô phỏng tạo trễ do tắc nghẽn công suất. Giá trị cốt lõi của AI nằm ở **phân tầng cảnh báo (Triage)** để Trưởng ca can thiệp sớm.
 - **AI Level-first (làm hết P1 rồi P2 rồi P3, bỏ qua hạn):** Gây trễ đến **11.6%**, tệ hơn cả FIFO (7.2%). Đây là bằng chứng quan trọng về rủi ro áp dụng AI sai cách mà đề tài công bố.

@@ -39,7 +39,7 @@
 - Ngày khách nhận trước ngày giao vận tải (`customer < carrier`): **23** đơn.
 - Số đơn bị gắn cờ `ts_anomaly` trong cohort: **117** đơn.
 
-## 5. Phễu Lọc Dữ liệu (Khớp hoàn toàn với Mục 3)
+## 5. Phễu Lọc Dữ liệu (Cohort Filter)
 
 - **Tổng số đơn ban đầu:** 99,441 đơn
 - **Sau khi lọc (delivered, đủ 3 mốc thời gian, 1 seller):** 95,180 đơn

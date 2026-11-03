@@ -33,3 +33,4 @@ def test_triage_and_web_data_reproducibility():
             p1 = os.path.join(out1, fname)
             p2 = os.path.join(out2, fname)
             assert filecmp.cmp(p1, p2, shallow=False), f"File {fname} không trùng khớp byte giữa hai lần xuất!"
+

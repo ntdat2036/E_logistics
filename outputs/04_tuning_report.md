@@ -31,7 +31,7 @@
 }
 ```
 
-## 3. Chỉ số kiểm định trên tập Test (Mục 4.9)
+## 3. Chỉ số kiểm định trên tập Test
 
 - **Test ROC-AUC:** 0.6553
 - **Test PR-AUC:** 0.1548
@@ -47,5 +47,5 @@
 | **P2** | 50.4% (9,459) | 5.9% | 39.9% (559) |
 | **P3** | 34.0% (6,374) | 4.7% | 21.3% (298) |
 
-- **Recall top 15% rủi ro nhất:** 38.2%
+- **Recall top 15% rủi ro nhất:** 38.0%
 - **Tổng số đơn cần Trưởng ca xử lý thủ công:** 41.1% (bắt được 57.5% đơn trễ)

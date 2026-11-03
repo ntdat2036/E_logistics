@@ -2,7 +2,7 @@
   {
     "top_percent": 5,
     "top_k_orders": 939,
-    "recall_tree": 0.1484,
+    "recall_tree": 0.1434,
     "recall_seller_rule": 0.1412,
     "recall_slack_rule": 0.0385,
     "recall_fifo_rule": 0.035,
@@ -11,27 +11,27 @@
   {
     "top_percent": 10,
     "top_k_orders": 1877,
-    "recall_tree": 0.2803,
+    "recall_tree": 0.2703,
     "recall_seller_rule": 0.276,
-    "recall_slack_rule": 0.0863,
+    "recall_slack_rule": 0.072,
     "recall_fifo_rule": 0.0742,
     "recall_random": 0.1
   },
   {
     "top_percent": 15,
     "top_k_orders": 2815,
-    "recall_tree": 0.3816,
+    "recall_tree": 0.3795,
     "recall_seller_rule": 0.3923,
-    "recall_slack_rule": 0.1213,
+    "recall_slack_rule": 0.132,
     "recall_fifo_rule": 0.122,
     "recall_random": 0.15
   },
   {
     "top_percent": 20,
     "top_k_orders": 3753,
-    "recall_tree": 0.4437,
+    "recall_tree": 0.4429,
     "recall_seller_rule": 0.4601,
-    "recall_slack_rule": 0.1919,
+    "recall_slack_rule": 0.1969,
     "recall_fifo_rule": 0.1683,
     "recall_random": 0.2
   },
@@ -47,8 +47,8 @@
   {
     "top_percent": 30,
     "top_k_orders": 5630,
-    "recall_tree": 0.5021,
-    "recall_seller_rule": 0.5478,
+    "recall_tree": 0.5036,
+    "recall_seller_rule": 0.5442,
     "recall_slack_rule": 0.3067,
     "recall_fifo_rule": 0.2682,
     "recall_random": 0.3
@@ -56,18 +56,18 @@
   {
     "top_percent": 40,
     "top_k_orders": 7506,
-    "recall_tree": 0.5934,
-    "recall_seller_rule": 0.6234,
-    "recall_slack_rule": 0.4044,
+    "recall_tree": 0.6063,
+    "recall_seller_rule": 0.6248,
+    "recall_slack_rule": 0.4001,
     "recall_fifo_rule": 0.3438,
     "recall_random": 0.4
   },
   {
     "top_percent": 50,
     "top_k_orders": 9383,
-    "recall_tree": 0.6776,
+    "recall_tree": 0.6733,
     "recall_seller_rule": 0.6805,
-    "recall_slack_rule": 0.5021,
+    "recall_slack_rule": 0.5036,
     "recall_fifo_rule": 0.4358,
     "recall_random": 0.5
   }
