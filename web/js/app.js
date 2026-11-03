@@ -243,7 +243,7 @@ function renderModelTab() {
           <td>${res.role}</td>
           <td>${res.test.roc_auc.toFixed(4)}</td>
           <td>${res.test.pr_auc.toFixed(4)}</td>
-          <td>${res.test.brier.toFixed(4)}</td>
+          <td>${typeof res.test.brier === 'number' ? res.test.brier.toFixed(4) : res.test.brier}</td>
         </tr>
       `;
     }).join('');

@@ -1,9 +1,8 @@
 """model.py - Thuật toán Machine Learning và bộ đo lường thuần NumPy.
-TUÂN THỦ TUYỆT ĐỐI MỤC 2 (R2): KHÔNG import scikit-learn trong src/.
+Quy tắc R2: KHÔNG import scikit-learn trong src/.
 Bao gồm:
 - BinMapper: Ánh xạ quantile bins (32 hoặc 64)
 - DecisionTree: Cây quyết định thuần NumPy (hỗ trợ Gini/Entropy, min_samples_split, max_features, class_weight)
-- RandomForest: Rừng ngẫu nhiên thuần NumPy (bagging, max_features='sqrt')
 - LogisticRegression: Hồi quy Logistic tối ưu Gradient Descent, L2, class_weight, loss_history_
 - StandardScaler: Chuẩn hóa Z-score thuần NumPy
 - Bộ metrics thuần NumPy: accuracy, precision, recall, f1, roc_auc, pr_auc (average precision), confusion_matrix, brier_score
@@ -56,7 +55,7 @@ class StandardScaler:
 
 
 # ==============================================================================
-# 2. CÂY QUYẾT ĐỊNH & RỪNG NGẪU NHIÊN THUẦN NUMPY
+# 2. CÂY QUYẾT ĐỊNH THUẦN NUMPY
 # ==============================================================================
 
 class DecisionTree:
@@ -247,57 +246,7 @@ class DecisionTree:
         return float(e[k]) if k < len(e) else float('inf')
 
 
-class RandomForest:
-    """Rừng ngẫu nhiên thuần NumPy (Bagging ensemble các cây DecisionTree)."""
-    def __init__(
-        self,
-        n_estimators=100,
-        max_depth=8,
-        min_samples_leaf=50,
-        max_features='sqrt',
-        criterion='gini',
-        n_bins=64,
-        random_state=42,
-    ):
-        self.n_estimators = n_estimators
-        self.max_depth = max_depth
-        self.min_leaf = min_samples_leaf
-        self.max_features = max_features
-        self.criterion = criterion
-        self.n_bins = n_bins
-        self.random_state = random_state
-        self.trees = []
 
-    def fit(self, X, y):
-        X = np.asarray(X, dtype=float)
-        y = np.asarray(y, dtype=float)
-        rng = np.random.default_rng(self.random_state)
-        n = len(X)
-        self.trees = []
-        for _ in range(self.n_estimators):
-            sample_idx = rng.integers(0, n, size=n)
-            tree = DecisionTree(
-                max_depth=self.max_depth,
-                min_samples_leaf=self.min_leaf,
-                criterion=self.criterion,
-                max_features=self.max_features,
-                n_bins=self.n_bins,
-                random_state=int(rng.integers(0, 1_000_000)),
-            )
-            tree.fit(X[sample_idx], y[sample_idx])
-            self.trees.append(tree)
-
-        # Tính tổng hợp feature importances
-        all_imps = np.stack([t.feature_importances_ for t in self.trees], axis=0)
-        self.feature_importances_ = all_imps.mean(axis=0)
-        return self
-
-    def predict_proba(self, X):
-        preds = np.stack([t.predict_proba(X) for t in self.trees], axis=0)
-        return preds.mean(axis=0)
-
-    def predict(self, X, threshold=0.5):
-        return (self.predict_proba(X) >= threshold).astype(int)
 
 
 # ==============================================================================

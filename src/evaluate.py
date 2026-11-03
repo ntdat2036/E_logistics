@@ -1,5 +1,5 @@
-"""evaluate.py - Đánh giá mô hình và so sánh baseline (Mục 4.5, Bước 11-13).
-TUÂN THỦ TUYỆT ĐỐI MỤC 2 (R2): KHÔNG import scikit-learn trong src/.
+"""evaluate.py - Đánh giá mô hình và so sánh baseline (Bước 11-13).
+Quy tắc R2: KHÔNG import scikit-learn trong src/.
 Chỉ sử dụng các thuật toán và độ đo thuần NumPy từ src/model.py.
 """
 import json
@@ -61,32 +61,32 @@ ORDER_ONLY_FEATURES = [
 ]
 
 
-def evaluate_predictions(y_true, y_score, threshold=0.5):
+def evaluate_predictions(y_true, y_score, threshold=0.5, is_probability=True):
     """Tính toàn bộ các chỉ số đánh giá chuẩn cho một vector xác suất/điểm rủi ro."""
     y_true = np.asarray(y_true).astype(int)
     y_score = np.asarray(y_score, dtype=float)
     y_pred = (y_score >= threshold).astype(int)
 
-    cm = confusion_matrix(y_true, y_pred)
+    cm = confusion_matrix(y_true, y_pred) if is_probability else None
     return {
         'roc_auc': round(float(roc_auc_score(y_true, y_score)), 4),
         'pr_auc': round(float(average_precision_score(y_true, y_score)), 4),
-        'brier': round(float(brier_score_loss(y_true, y_score)), 4),
-        'accuracy': round(float(accuracy_score(y_true, y_pred)), 4),
-        'precision': round(float(precision_score(y_true, y_pred, zero_division=0)), 4),
-        'recall': round(float(recall_score(y_true, y_pred, zero_division=0)), 4),
-        'f1': round(float(f1_score(y_true, y_pred, zero_division=0)), 4),
+        'brier': round(float(brier_score_loss(y_true, y_score)), 4) if is_probability else 'n/a (không phải xác suất)',
+        'accuracy': round(float(accuracy_score(y_true, y_pred)), 4) if is_probability else 'n/a',
+        'precision': round(float(precision_score(y_true, y_pred, zero_division=0)), 4) if is_probability else 'n/a',
+        'recall': round(float(recall_score(y_true, y_pred, zero_division=0)), 4) if is_probability else 'n/a',
+        'f1': round(float(f1_score(y_true, y_pred, zero_division=0)), 4) if is_probability else 'n/a',
         'confusion_matrix': {
             'tn': int(cm[0, 0]),
             'fp': int(cm[0, 1]),
             'fn': int(cm[1, 0]),
             'tp': int(cm[1, 1]),
-        },
+        } if is_probability else None,
     }
 
 
 def run_model_comparison(d_cohort, tr_fit, val_idx, test_idx, out_dir='outputs'):
-    """Chạy so sánh 7 mô hình No Free Lunch (Mục 4.5) trên cùng một split (Không dùng Random Forest)."""
+    """Chạy so sánh 7 mô hình No Free Lunch trên cùng một split (Không dùng Random Forest)."""
     os.makedirs(out_dir, exist_ok=True)
     d_filled = fill_train_median(d_cohort, tr_fit)
 
@@ -117,8 +117,8 @@ def run_model_comparison(d_cohort, tr_fit, val_idx, test_idx, out_dir='outputs')
     p_fifo_te = 1.0 - (t_te - t_te.min()) / max(float(t_te.max() - t_te.min()), 1.0)
     models_eval['2_Rule_FIFO'] = {
         'role': 'As-Is đề cương (đơn đến trước làm trước)',
-        'val': evaluate_predictions(y_va, p_fifo_va),
-        'test': evaluate_predictions(y_te, p_fifo_te),
+        'val': evaluate_predictions(y_va, p_fifo_va, is_probability=False),
+        'test': evaluate_predictions(y_te, p_fifo_te, is_probability=False),
     }
 
     # 3. Slack rule (điểm = -min_to_limit_h: đơn gấp nhất xếp trước)
@@ -126,8 +126,8 @@ def run_model_comparison(d_cohort, tr_fit, val_idx, test_idx, out_dir='outputs')
     slack_te = -d_cohort.iloc[test_idx]['min_to_limit_h'].values
     models_eval['3_Rule_Slack'] = {
         'role': 'Baseline kinh điển (slack ngắn nhất làm trước)',
-        'val': evaluate_predictions(y_va, slack_va),
-        'test': evaluate_predictions(y_te, slack_te),
+        'val': evaluate_predictions(y_va, slack_va, is_probability=False),
+        'test': evaluate_predictions(y_te, slack_te, is_probability=False),
     }
 
     # 4. Quy tắc Lịch sử người bán (điểm = seller_han_rate)
@@ -135,8 +135,8 @@ def run_model_comparison(d_cohort, tr_fit, val_idx, test_idx, out_dir='outputs')
     han_te = d_cohort.iloc[test_idx]['seller_han_rate'].values
     models_eval['4_Rule_Seller_History'] = {
         'role': 'Baseline mạnh 1 đặc trưng (tỷ lệ trễ lịch sử seller)',
-        'val': evaluate_predictions(y_va, han_va),
-        'test': evaluate_predictions(y_te, han_te),
+        'val': evaluate_predictions(y_va, han_va, is_probability=True),
+        'test': evaluate_predictions(y_te, han_te, is_probability=True),
     }
 
     # 5. Cây quyết định chỉ dùng đặc trưng đơn hàng (không lịch sử - kiểm tra giá trị của lịch sử)
@@ -148,8 +148,8 @@ def run_model_comparison(d_cohort, tr_fit, val_idx, test_idx, out_dir='outputs')
     p_to_te = tree_order.predict_proba(X_order[test_idx])
     models_eval['5_Tree_Order_Only'] = {
         'role': 'Cây không lịch sử (chỉ đặc trưng đơn hàng)',
-        'val': evaluate_predictions(y_va, p_to_va),
-        'test': evaluate_predictions(y_te, p_to_te),
+        'val': evaluate_predictions(y_va, p_to_va, is_probability=True),
+        'test': evaluate_predictions(y_te, p_to_te, is_probability=True),
     }
 
     # 6. Logistic Regression thuần NumPy
@@ -163,19 +163,32 @@ def run_model_comparison(d_cohort, tr_fit, val_idx, test_idx, out_dir='outputs')
     p_logr_te = logr.predict_proba(X_te_s)
     models_eval['6_Logistic_Regression'] = {
         'role': 'Baseline tuyến tính (chuẩn hóa Z-score, class_weight)',
-        'val': evaluate_predictions(y_va, p_logr_va),
-        'test': evaluate_predictions(y_te, p_logr_te),
+        'val': evaluate_predictions(y_va, p_logr_va, is_probability=True),
+        'test': evaluate_predictions(y_te, p_logr_te, is_probability=True),
     }
 
-    # 7. Decision Tree thuần NumPy (mô hình lõi)
-    tree = DecisionTree(max_depth=5, min_samples_leaf=200, criterion='gini', random_state=42)
+    # 7. Decision Tree thuần NumPy (mô hình tối ưu cuối cùng từ weights/best_params.json)
+    best_params_path = os.path.join(BASE_DIR, 'weights', 'best_params.json')
+    if os.path.exists(best_params_path):
+        with open(best_params_path, 'r', encoding='utf-8') as f:
+            best_p = json.load(f)
+    else:
+        best_p = {
+            'max_depth': 6,
+            'min_samples_leaf': 100,
+            'criterion': 'gini',
+            'n_bins': 32,
+            'min_samples_split': 200,
+        }
+
+    tree = DecisionTree(**best_p, random_state=42)
     tree.fit(X_tr, y_tr)
     p_dt_va = tree.predict_proba(X_va)
     p_dt_te = tree.predict_proba(X_te)
     models_eval['7_Decision_Tree_Core'] = {
-        'role': 'Mô hình lõi theo đề (depth 5, leaf 200, thuần NumPy)',
-        'val': evaluate_predictions(y_va, p_dt_va),
-        'test': evaluate_predictions(y_te, p_dt_te),
+        'role': f"Mô hình lõi tối ưu (depth {best_p.get('max_depth', 6)}, leaf {best_p.get('min_samples_leaf', 100)}, n_bins {best_p.get('n_bins', 32)}, thuần NumPy)",
+        'val': evaluate_predictions(y_va, p_dt_va, is_probability=True),
+        'test': evaluate_predictions(y_te, p_dt_te, is_probability=True),
         'feature_importances': {
             FEATURES[i]: round(float(tree.feature_importances_[i]), 4)
             for i in range(len(FEATURES))
@@ -202,11 +215,12 @@ def run_model_comparison(d_cohort, tr_fit, val_idx, test_idx, out_dir='outputs')
             t_roc = res['test']['roc_auc']
             t_pr = res['test']['pr_auc']
             t_brier = res['test']['brier']
-            f.write(f"| {key[:1]} | **{name}** | {role} | {v_roc:.4f} | {v_pr:.4f} | **{t_roc:.4f}** | **{t_pr:.4f}** | {t_brier:.4f} |\n")
+            brier_str = f"{t_brier:.4f}" if isinstance(t_brier, (int, float)) else str(t_brier)
+            f.write(f"| {key[:1]} | **{name}** | {role} | {v_roc:.4f} | {v_pr:.4f} | **{t_roc:.4f}** | **{t_pr:.4f}** | {brier_str} |\n")
 
-        f.write("\n\n## Nhận định thực tế và bài học trung thực (Mục 4.9 & 11)\n\n")
-        f.write("1. **Quy tắc lịch sử người bán (`seller_han_rate`) là tín hiệu mạnh nhất:** Đạt Test ROC-AUC ~0.671, ngang bằng với Decision Tree lõi (~0.667).\n")
-        f.write("2. **Cây không có đặc trưng lịch sử (`Tree_Order_Only`):** Test ROC-AUC giảm xuống ~0.509 (gần như dự đoán ngẫu nhiên), chứng minh thông tin trễ bàn giao trong Olist nằm ở năng lực/hành vi của người bán chứ không phải kích thước/giá trị đơn hàng.\n")
+        f.write("\n\n## Nhận định thực tế và bài học trung thực\n\n")
+        f.write("1. **Quy tắc lịch sử người bán (`seller_han_rate`) là tín hiệu mạnh nhất:** Đạt Test ROC-AUC ~0.671, so với Decision Tree lõi (~0.655).\n")
+        f.write("2. **Cây không có đặc trưng lịch sử (`Tree_Order_Only`):** Test ROC-AUC giảm xuống ~0.518 (gần như đoán ngẫu nhiên), chứng minh thông tin trễ bàn giao trong Olist nằm ở năng lực/hành vi của người bán chứ không phải kích thước/giá trị đơn hàng.\n")
         f.write("3. **As-Is FIFO & Slack:** ROC-AUC chỉ đạt ~0.465 và ~0.487 (dưới ngẫu nhiên).\n")
         f.write("4. **Lợi thế thực sự của Decision Tree:** Không phải độ chính xác vượt trội mà là tính **minh bạch**, khả năng gộp nhiều đặc trưng và phân nhánh điều kiện hỗ trợ Trưởng ca ra quyết định.\n")
 

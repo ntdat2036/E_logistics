@@ -1,6 +1,6 @@
-"""synth.py - Sinh dữ liệu mô phỏng giả định cho các trường thông tin Olist còn thiếu (Mục 4.7 & ASSUMPTIONS.md).
-TUÂN THỦ TUYỆT ĐỐI MỤC 2 (R4) VÀ MỤC 10 (ĐIỀU CẤM 7):
-- Sử dụng SEED = 42 cố định để đảm bảo tính tái lập (R7).
+"""synth.py - Sinh dữ liệu mô phỏng giả định cho các trường thông tin Olist còn thiếu (xem ASSUMPTIONS.md).
+Quy tắc bảo đảm tính toàn vẹn:
+- Sử dụng SEED = 42 cố định để đảm bảo tính tái lập.
 - Mọi cột giả lập bắt buộc mang tiền tố 'sim_'.
 - Lưu tách biệt tại data/simulated/, tuyệt đối không ghi đè vào data/raw/.
 - Dữ liệu này chỉ phục vụ lớp luật FEFO, bảng cảnh báo tồn kho và so sánh chi phí trên Web.
@@ -165,7 +165,7 @@ def generate_simulated_data(raw_dir='data/raw', out_dir='data/simulated', seed=S
         sim_order_total_price=('price', 'sum'),
     ).reset_index()
 
-    # Cờ quy tắc FEFO (nếu còn hạn <= 3 ngày: gắn cờ để nâng ưu tiên và kiểm cảm quan theo Mục 4.7)
+    # Cờ quy tắc FEFO (nếu còn hạn <= 3 ngày: gắn cờ để nâng ưu tiên và kiểm cảm quan)
     order_sim_summary['sim_fefo_priority_flag'] = (
         (order_sim_summary['sim_has_perishable_item'] == 1)
         & (order_sim_summary['sim_min_days_to_expiry'] <= 3.0)

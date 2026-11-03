@@ -1,5 +1,5 @@
 """simulate.py - Mô phỏng hàng đợi 1 trung tâm xử lý đơn hàng: K nhân viên, ca 08:00-17:00 Thứ 2 - Thứ 7.
-TUÂN THỦ TUYỆT ĐỐI MỤC 2 (R2), MỤC 7 VÀ PHỤ LỤC C CỦA HUONG_DAN.md.
+Quy tắc R2: Không dùng scikit-learn. Toàn bộ thuật toán mô phỏng viết thuần Python/NumPy.
 GIẢ ĐỊNH (công bố trong báo cáo): Thời gian xử lý 1 đơn = SVC_BASE + SVC_PER_ITEM * (n_items - 1) phút.
 Thời điểm đơn đến (order_approved_at) và hạn bàn giao (shipping_limit_date) là dữ liệu THẬT.
 """
@@ -80,7 +80,7 @@ def simulate(t_arr, t_due, svc, prio, K):
 
 
 def policies(t_due, p_risk, delta_h=24.0, t1=None, t2=None):
-    """Tạo các chính sách ưu tiên theo Mục 7.2:
+    """Tạo các chính sách ưu tiên vận hành hàng đợi kho:
     - FIFO: Thứ tự đến (As-Is truyền thống theo đề cương).
     - EDD: Sắp theo hạn bàn giao (baseline kinh điển, không cần AI).
     - AI_EDD: Hạn bàn giao - 24h * điểm rủi ro (To-Be cải tiến).
@@ -100,7 +100,7 @@ def policies(t_due, p_risk, delta_h=24.0, t1=None, t2=None):
 
 
 def kpis(done, t_arr, t_due):
-    """Tính 3 KPI cốt lõi theo Mục 7.3: Lead time TB/p95, Tỷ lệ đúng hạn, Tỷ lệ trễ hạn."""
+    """Tính 3 KPI cốt lõi của vận hành kho: Lead time TB/p95, Tỷ lệ đúng hạn, Tỷ lệ trễ hạn."""
     lead_h = (done - t_arr) / 60.0
     return dict(
         late_rate=round(float((done > t_due).mean()), 4),
@@ -111,7 +111,7 @@ def kpis(done, t_arr, t_due):
 
 
 def run_simulation_grid(t_arr, t_due, n_items, p_risk, t1, t2, out_dir='outputs'):
-    """Chạy phân tích độ nhạy trên lưới: K ∈ {3,4,5,6} × svc_mult ∈ {0.8, 0.9, 1.0} (Mục 7.1)."""
+    """Chạy phân tích độ nhạy trên lưới: K ∈ {3,4,5,6} × svc_mult ∈ {0.8, 0.9, 1.0}."""
     os.makedirs(out_dir, exist_ok=True)
     k_list = [3, 4, 5, 6]
     mult_list = [0.8, 0.9, 1.0]

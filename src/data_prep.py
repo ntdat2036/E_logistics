@@ -1,5 +1,5 @@
 """data_prep.py - Dựng bảng order-level từ 5 file Olist GỐC. Không sửa file gốc.
-Tuân thủ tuyệt đối Mục 2 (R1, R2, R3) và Phụ lục A của HUONG_DAN.md.
+Tuân thủ tuyệt đối các nguyên tắc bắt buộc: R1 (dữ liệu gốc), R2 (không dùng scikit-learn trong src/), R3 (kiểm soát rò rỉ dữ liệu).
 """
 import sys
 if sys.stdout.encoding != 'utf-8':
@@ -118,7 +118,7 @@ def build_order_table(raw):
     d['late_delivery'] = (d.order_delivered_customer_date > d.order_estimated_delivery_date).astype(int)
     d['late_handover'] = (d.order_delivered_carrier_date > d['limit']).astype(int)
 
-    # Lỗi logic thời gian: chỉ đánh dấu, KHÔNG xóa (Mục 3)
+    # Lỗi logic thời gian: chỉ đánh dấu, KHÔNG xóa (để kiểm toán minh bạch dữ liệu gốc)
     d['ts_anomaly'] = (
         (d.order_delivered_carrier_date < d.order_purchase_timestamp)
         | (d.order_delivered_customer_date < d.order_delivered_carrier_date)
@@ -205,7 +205,7 @@ def time_split(d, test_start='2018-05-01', val_frac=0.2):
 
 
 def stratified_split(d, test_frac=0.2, seed=42):
-    """Chia ngẫu nhiên phân tầng 80/20 thuần NumPy (đối chiếu kết quả 'lạc quan' theo Mục 4.4)."""
+    """Chia ngẫu nhiên phân tầng 80/20 thuần NumPy (đối chiếu kết quả 'lạc quan' khi rò rỉ phân phối thời gian)."""
     rng = np.random.default_rng(seed)
     y = d.late_handover.values
     idx0 = np.where(y == 0)[0].copy()
@@ -411,7 +411,7 @@ def audit_raw(raw_dir='data/raw', out_dir='outputs'):
         f.write(f"- Ngày khách nhận trước ngày giao vận tải (`customer < carrier`): **{anom_customer_before_carrier}** đơn.\n")
         f.write(f"- Số đơn bị gắn cờ `ts_anomaly` trong cohort: **{cohort_anom_count}** đơn.\n")
 
-        f.write("\n## 5. Phễu Lọc Dữ liệu (Khớp hoàn toàn với Mục 3)\n\n")
+        f.write("\n## 5. Phễu Lọc Dữ liệu (Cohort Filter)\n\n")
         f.write(f"- **Tổng số đơn ban đầu:** {funnel['0_raw_orders']:,} đơn\n")
         f.write(f"- **Sau khi lọc (delivered, đủ 3 mốc thời gian, 1 seller):** {funnel['1_delivered_with_timestamps_1seller']:,} đơn\n")
         f.write(f"- **Cohort (2017-01-01 đến 2018-07-31):** {funnel['2_cohort_20170101_to_20180801']:,} đơn\n")

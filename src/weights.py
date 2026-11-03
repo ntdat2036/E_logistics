@@ -1,5 +1,5 @@
-"""weights.py - Quản lý lưu và nạp cấu trúc cây, siêu tham số và ngưỡng (Mục 5, Mục 8.3, Phụ lục D).
-TUÂN THỦ TUYỆT ĐỐI MỤC 2 (R2): KHÔNG import scikit-learn trong src/.
+"""weights.py - Quản lý lưu và nạp cấu trúc cây, siêu tham số và ngưỡng.
+Quy tắc cốt lõi: KHÔNG import scikit-learn trong src/.
 """
 import json
 import os
@@ -14,7 +14,7 @@ from src.model import DecisionTree, BinMapper
 
 
 def export_tree_dict(tree, feature_names, t1, t2):
-    """Xuất cây sang định dạng dict / JSON theo Phụ lục D.
+    """Xuất cây sang định dạng dict / JSON tương thích với JavaScript trên Web.
     Quy ước rẽ chuẩn: x[f] < thr -> đi trái (thr là giá trị thực tế, không phải chỉ số bin).
     """
     nodes = []

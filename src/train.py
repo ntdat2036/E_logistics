@@ -1,5 +1,4 @@
 """train.py - Tinh chỉnh siêu tham số, khóa ngưỡng trên Validation và đánh giá cuối trên Test (Giai đoạn 4).
-TUÂN THỦ TUYỆT ĐỐI MỤC 2 (R2, R3) VÀ MỤC 4.5, 4.6, 4.9.
 1. GridSearch CV expanding-window 4 fold trên train_fit, tiêu chí PR-AUC.
 2. Huấn luyện mô hình tối ưu trên train_fit.
 3. Quét và KHÓA ngưỡng trên Validation: t1 (p85), t2 (p45), t_f1, t_cost. Lưu vào weights/.
@@ -48,7 +47,7 @@ from src.weights import save_tree, verify_roundtrip
 
 
 def run_grid_search(X_tr, y_tr, param_grid=None, verbose=True):
-    """Thực hiện GridSearch expanding-window 4-fold theo tiêu chí PR-AUC (Mục 4.5)."""
+    """Thực hiện GridSearch expanding-window 4-fold theo tiêu chí PR-AUC."""
     if param_grid is None:
         param_grid = {
             'max_depth': [3, 4, 5, 6, 8],
@@ -118,7 +117,7 @@ def run_grid_search(X_tr, y_tr, param_grid=None, verbose=True):
 
 
 def find_validation_thresholds(y_val, p_val, c_fn=3.0, c_fp=1.0):
-    """Quét và xác định các ngưỡng quyết định trên tập Validation (Mục 4.6)."""
+    """Quét và xác định các ngưỡng quyết định trên tập Validation."""
     # 1. Cắt mức ưu tiên P1/P2/P3 theo phân vị điểm rủi ro trên validation
     # t1: phân vị 85% (top 15% rủi ro cao nhất xếp P1)
     # t2: phân vị 45% (từ 45% đến 85% xếp P2, dưới 45% xếp P3)
@@ -167,7 +166,7 @@ def find_validation_thresholds(y_val, p_val, c_fn=3.0, c_fp=1.0):
 
 
 def evaluate_final_test_set(tree, X_test, y_test, thresholds, d_test=None):
-    """Mở tập Test ĐÚNG MỘT LẦN sau khi các ngưỡng đã bị khóa cứng (Mục 4.6 & 4.9)."""
+    """Mở tập Test ĐÚNG MỘT LẦN sau khi các ngưỡng đã bị khóa cứng."""
     p_test = tree.predict_proba(X_test)
     y_test = np.asarray(y_test, dtype=int)
     n_test = len(y_test)
@@ -202,7 +201,7 @@ def evaluate_final_test_set(tree, X_test, y_test, thresholds, d_test=None):
 
     # 4. Triage Recall: Tỷ lệ bắt đơn trễ khi chỉ cảnh báo top 15% đơn rủi ro nhất
     top_15_count = int(np.ceil(0.15 * n_test))
-    top_15_idx = np.argsort(p_test)[::-1][:top_15_count]
+    top_15_idx = np.argsort(-p_test, kind='stable')[:top_15_count]
     recall_top15 = float(y_test[top_15_idx].sum() / n_pos)
 
     # 5. Cờ can thiệp Trưởng ca (P1 hoặc seller_hist_n < 20)
@@ -339,7 +338,7 @@ def main():
         f.write("```json\n" + json.dumps(best_params, indent=2) + "\n```\n\n")
         f.write("## 2. Ngưỡng phân vị và ngưỡng phân loại đã khóa (từ Validation)\n\n")
         f.write("```json\n" + json.dumps(thresholds, indent=2) + "\n```\n\n")
-        f.write("## 3. Chỉ số kiểm định trên tập Test (Mục 4.9)\n\n")
+        f.write("## 3. Chỉ số kiểm định trên tập Test\n\n")
         f.write(f"- **Test ROC-AUC:** {test_metrics['roc_auc']}\n")
         f.write(f"- **Test PR-AUC:** {test_metrics['pr_auc']}\n")
         f.write(f"- **Test Brier score:** {test_metrics['brier']}\n")

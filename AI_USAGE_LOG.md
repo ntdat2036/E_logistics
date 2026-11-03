@@ -20,7 +20,7 @@
 - **Thời gian:** 2026-11-01
 - **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10
 - **Nội dung thực hiện bởi AI:**
-  1. Đọc và phân tích toàn bộ yêu cầu trong `HUONG_DAN.md` (bao gồm các quy tắc Mục 2, cấu trúc Mục 5, các giai đoạn Mục 6, và các điều cấm Mục 10).
+  1. Đọc và phân tích toàn bộ yêu cầu trong `tài liệu hướng dẫn đồ án` (bao gồm các quy tắc Mục 2, cấu trúc Mục 5, các giai đoạn Mục 6, và các điều cấm Mục 10).
   2. Khảo sát dữ liệu gốc ban đầu trong thư mục `dataset/`, kiểm tra số lượng dòng và mã băm SHA256 để đảm bảo tính toàn vẹn.
   3. Lên kế hoạch chi tiết cho Giai đoạn 0 và trình nhóm phê duyệt trước khi thao tác.
   4. Tạo cấu trúc cây thư mục chuẩn: `data/raw/`, `src/`, `tests/`, `weights/`, `outputs/`, `web/`.
@@ -130,18 +130,18 @@
 - **Thời gian:** 2026-11-01
 - **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10
 - **Nội dung thực hiện bởi AI:**
-  1. Cài đặt module mô phỏng hàng đợi kho [`src/simulate.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/simulate.py) theo đúng Phụ lục C và Mục 7:
+  1. Cài đặt module mô phỏng hàng đợi kho [`src/simulate.py`](src/simulate.py) theo đúng Phụ lục C và Mục 7:
      - 18,765 đơn hàng thật trong test, thời gian xử lý $6 + 3 \times (\text{n\_items} - 1)$ phút.
      - Ca làm việc 08:00 - 17:00, Thứ 2 đến Thứ 7.
      - So sánh 4 chính sách: FIFO (As-Is), EDD (baseline theo hạn), AI-EDD (To-Be) và AI Level-first (làm hết P1 rồi P2 rồi P3, bỏ qua hạn).
      - Quét toàn bộ lưới độ nhạy $K \in \{3,4,5,6\} \times \text{time\_factor} \in \{0.8, 0.9, 1.0\}$, lưu vào `outputs/05_simulation_grid.json`.
      - Kết quả tại $K=3$, 100% thời gian: FIFO trễ 7.2%, EDD trễ 0.8%, AI-EDD trễ 0.9%, AI Level-first trễ 11.6%.
-  2. Viết module thống kê, phân tích lỗi và giải thích [`src/statistical_analysis.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/statistical_analysis.py):
+  2. Viết module thống kê, phân tích lỗi và giải thích [`src/statistical_analysis.py`](src/statistical_analysis.py):
      - **Bước 18:** Bootstrap 1,000 lần tính khoảng tin cậy 95% của ROC-AUC ([0.6395, 0.6714]) và PR-AUC ([0.1420, 0.1699]); Paired bootstrap hiệu Tree - Seller và Tree - FIFO; đo lường ROC-AUC theo từng tháng test (05, 06, 07/2018).
      - **Bước 19:** Phân tích 857 đơn trễ bị bỏ sót (FN) theo bang và lịch sử người bán; khảo sát đơn hàng sát ngưỡng $t_1 \pm 0.03$.
      - **Bước 20:** Xuất cây dạng text (`outputs/05_tree_structure.txt`), trích xuất quyết định chi tiết 5 đơn mẫu, tính Gini importance và Permutation importance trên validation.
      - **Bước 21:** Xây dựng bảng lặp 5 Iterations (`outputs/05_iteration_table.json`) và báo cáo tổng hợp `outputs/05_phase5_report.md`.
-  3. Viết bộ kiểm thử [`tests/test_simulate.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/tests/test_simulate.py): Kiểm tra tính bảo toàn (`done >= t_arr`), ca làm việc hợp lệ và tính tuần tự khi $K=1$.
+  3. Viết bộ kiểm thử [`tests/test_simulate.py`](tests/test_simulate.py): Kiểm tra tính bảo toàn (`done >= t_arr`), ca làm việc hợp lệ và tính tuần tự khi $K=1$.
   4. Chạy toàn bộ test suite dự án qua `pytest`: 26/26 bài test vượt qua (100% PASS).
 - **Trạng thái:** Hoàn thành nghiệm thu Giai đoạn 5 (Chưa làm web, tuân thủ đúng yêu cầu).
 
@@ -149,14 +149,14 @@
 - **Thời gian:** 2026-11-01
 - **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10
 - **Nội dung thực hiện bởi AI:**
-  1. Soạn thảo tài liệu minh bạch hóa [`ASSUMPTIONS.md`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/ASSUMPTIONS.md):
+  1. Soạn thảo tài liệu minh bạch hóa [`ASSUMPTIONS.md`](ASSUMPTIONS.md):
      - Ghi nhận chi tiết các hạn chế của Olist (thiếu hạn dùng, lô hàng, tồn kho, chi phí).
      - Trình bày bảng giả định có kiểm soát: phân nhóm `sim_shelf_life_days` (180–365 ngày cho thực phẩm, mỹ phẩm), tồn an toàn $SS = z \cdot \sigma \cdot \sqrt{L}$, tồn kho hiện tại $SOH \sim \text{Poisson}(\mu \times 7) + SS$, ca làm việc 08:00–17:00, $K=3$, chi phí phạt trễ 10% giá trị đơn, chi phí lưu kho 0.05 R$/ngày.
      - Cam kết ranh giới: 100% cột giả lập mang tiền tố `sim_`, lưu tại `data/simulated/`, tuyệt đối không đưa vào mô hình học máy.
-  2. Viết script tạo dữ liệu [`src/synth.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/synth.py) với `SEED = 42`:
+  2. Viết script tạo dữ liệu [`src/synth.py`](src/synth.py) với `SEED = 42`:
      - Xuất `data/simulated/sku_inventory_simulated.csv` (32,951 SKU) gồm thống kê nhu cầu, tồn an toàn, tồn hiện tại và cờ nguy cơ đứt gãy.
      - Xuất `data/simulated/orders_simulated_features.csv` (98,666 đơn) gồm ngày nhận hàng, ngày hết hạn, cờ quy tắc FEFO (`sim_fefo_priority_flag` nếu hạn còn $\le 3$ ngày) và chi phí phạt trễ giả định.
-  3. Viết bộ kiểm thử [`tests/test_synth.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/tests/test_synth.py):
+  3. Viết bộ kiểm thử [`tests/test_synth.py`](tests/test_synth.py):
      - Kiểm tra tính tất định của seed 42.
      - Kiểm tra mọi cột giả lập bắt buộc có tiền tố `sim_`.
      - Kiểm tra danh sách `FEATURES` trong `src/data_prep.py` không chứa bất kỳ cột `sim_` nào.
@@ -167,18 +167,18 @@
 - **Thời gian:** 2026-11-01
 - **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10 (Người dùng phê duyệt tiếp tục Giai đoạn 6)
 - **Nội dung thực hiện bởi AI:**
-  1. Xây dựng module xuất dữ liệu web [`src/export_web.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/export_web.py):
+  1. Xây dựng module xuất dữ liệu web [`src/export_web.py`](src/export_web.py):
      - Xuất toàn bộ 9 file JSON vào `web/data/`: `summary.json`, `audit.json`, `eda_monthly.json`, `metrics.json`, `sample_orders.json` (50 đơn mẫu test, ẩn danh ID), `simulation_grid.json`, `threshold_sweep.json`, `tree.json` (quy ước Phụ lục D), `triage.json`.
      - Tuyệt đối không hard-code số liệu vào HTML.
-  2. Xây dựng script suy luận CLI độc lập [`predict_new.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/predict_new.py) hỗ trợ đọc CSV đơn mới hoặc chạy 10 mẫu mặc định, đưa ra điểm rủi ro, phân loại P1/P2/P3 và cờ Trưởng ca.
-  3. Xây dựng công cụ suy luận cây quyết định trên trình duyệt bằng JavaScript thuần [`web/js/tree.js`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/web/js/tree.js) theo Phụ lục E:
+  2. Xây dựng script suy luận CLI độc lập [`predict_new.py`](predict_new.py) hỗ trợ đọc CSV đơn mới hoặc chạy 10 mẫu mặc định, đưa ra điểm rủi ro, phân loại P1/P2/P3 và cờ Trưởng ca.
+  3. Xây dựng công cụ suy luận cây quyết định trên trình duyệt bằng JavaScript thuần [`web/js/tree.js`](web/js/tree.js) theo Phụ lục E:
      - Tuân thủ quy ước rẽ nhánh nghiêm ngặt: `x[f] < thr -> left` (dấu `<`, không dùng `<=`).
      - Ghi nhận đầy đủ chuỗi vết đường đi của quyết định (decision path trace) phục vụ giải thích mô hình.
-  4. Tải và đóng gói thư viện Chart.js v4.4.1 UMD offline vào [`web/vendor/chart.umd.js`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/web/vendor/chart.umd.js), không phụ thuộc CDN bên ngoài.
-  5. Xây dựng mã định kiểu CSS hiện đại, chuẩn tiếp cận và responsive [`web/css/styles.css`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/web/css/styles.css).
-  6. Xây dựng bộ điều khiển giao diện SPA [`web/js/app.js`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/web/js/app.js) tích hợp Chart.js, bộ lọc mô phỏng hàng đợi tương tác, thanh trượt chi phí $C_{FN}/C_{FP}$, và kiểm tra đơn mẫu trực tiếp.
-  7. Thiết kế giao diện Web hoàn chỉnh 8 tab [`web/index.html`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/web/index.html) với sơ đồ Swimlane SVG trực quan quy trình As-Is vs To-Be, bảng biểu và tuyên bố minh bạch đạo đức.
-  8. Viết bộ kiểm thử đối chiếu [`tests/test_web_parity.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/tests/test_web_parity.py) kiểm tra sự trùng khớp 100% giữa dự đoán cây trên Python và cấu trúc JSON (200 mẫu ngẫu nhiên, sai số tuyệt đối = 0.0).
+  4. Tải và đóng gói thư viện Chart.js v4.4.1 UMD offline vào [`web/vendor/chart.umd.js`](web/vendor/chart.umd.js), không phụ thuộc CDN bên ngoài.
+  5. Xây dựng mã định kiểu CSS hiện đại, chuẩn tiếp cận và responsive [`web/css/styles.css`](web/css/styles.css).
+  6. Xây dựng bộ điều khiển giao diện SPA [`web/js/app.js`](web/js/app.js) tích hợp Chart.js, bộ lọc mô phỏng hàng đợi tương tác, thanh trượt chi phí $C_{FN}/C_{FP}$, và kiểm tra đơn mẫu trực tiếp.
+  7. Thiết kế giao diện Web hoàn chỉnh 8 tab [`web/index.html`](web/index.html) với sơ đồ Swimlane SVG trực quan quy trình As-Is vs To-Be, bảng biểu và tuyên bố minh bạch đạo đức.
+  8. Viết bộ kiểm thử đối chiếu [`tests/test_web_parity.py`](tests/test_web_parity.py) kiểm tra sự trùng khớp 100% giữa dự đoán cây trên Python và cấu trúc JSON (200 mẫu ngẫu nhiên, sai số tuyệt đối = 0.0).
   9. Chạy toàn bộ test suite dự án qua `pytest`: 30 passed, 1 skipped (Node.js fallback).
 - **Trạng thái:** Hoàn thành nghiệm thu Giai đoạn 6.
 
@@ -188,13 +188,13 @@
 - **Thời gian:** 2026-11-02
 - **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10
 - **Nội dung thực hiện bởi AI:**
-  1. Viết script thực thi tự động toàn bộ 21 bước tuần tự [`run_pipeline.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/run_pipeline.py):
+  1. Viết script thực thi tự động toàn bộ 21 bước tuần tự [`run_pipeline.py`](run_pipeline.py):
      - Tự động gọi lần lượt Data prep & Audit (1-6) $\rightarrow$ Leakage Audit (7-10) $\rightarrow$ Synth inventory & FEFO $\rightarrow$ Evaluate 7 baselines (11-13) $\rightarrow$ Hyperparameter GridSearch & Khóa ngưỡng (14-17) $\rightarrow$ Bootstrap CI, Error analysis, Explainability (18-20) $\rightarrow$ Queue Simulation As-Is vs To-Be (21) $\rightarrow$ Export Web Assets $\rightarrow$ Chạy Pytest toàn diện.
      - In bảng tổng kết nghiệm thu so khớp tự động với các chỉ số mục tiêu trong Mục 4.9.
-  2. Viết script tạo báo cáo Jupyter Notebook tự động [`build_notebook.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/build_notebook.py) bằng thư viện `nbformat`.
-  3. Hoàn thiện tài liệu [`README.md`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/README.md) chi tiết:
+  2. Viết script tạo báo cáo Jupyter Notebook tự động [`build_notebook.py`](build_notebook.py) bằng thư viện `nbformat`.
+  3. Hoàn thiện tài liệu [`README.md`](README.md) chi tiết:
      - Tóm tắt đề tài, cấu trúc thư mục, quy tắc bắt buộc R1–R7, bảng kết quả 7 mô hình, hướng dẫn tái lập 1 lệnh, checklist nghiệm thu Mục 9.2, giới hạn nghiên cứu Mục 11 và danh mục sửa đề cương Word Mục 12.
-  4. Cập nhật và đóng gói toàn bộ nhật ký [`AI_USAGE_LOG.md`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/AI_USAGE_LOG.md).
+  4. Cập nhật và đóng gói toàn bộ nhật ký [`AI_USAGE_LOG.md`](AI_USAGE_LOG.md).
   5. Thực thi chạy lại toàn bộ pipeline `python run_pipeline.py` từ đầu để xác nhận tính tái lập tuyệt đối (Rule R7).
 - **Trạng thái:** Hoàn thành 100% toàn bộ 7 giai đoạn của đồ án.
 
@@ -204,8 +204,8 @@
 - **Thời gian:** 2026-11-02
 - **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10 (Yêu cầu viết notebook chuyên sâu theo prompt CK10 Olist Decision Tree)
 - **Nội dung thực hiện bởi AI:**
-  1. Tạo module alias [`src/np_tree.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/np_tree.py) xuất các lớp `DecisionTree`, `BinMapper`, `Node` từ `src/model.py` để notebook import tự nhiên theo đúng yêu cầu đề bài.
-  2. Xây dựng trình sinh tự động [`generate_complete_notebook.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/generate_complete_notebook.py) tạo ra [`notebook.ipynb`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/notebook.ipynb) đạt chuẩn 100% theo quy cách 4 repo tham khảo (LogR, KNN, HGB, K-Means):
+  1. Tạo module alias [`src/np_tree.py`](src/np_tree.py) xuất các lớp `DecisionTree`, `BinMapper`, `Node` từ `src/model.py` để notebook import tự nhiên theo đúng yêu cầu đề bài.
+  2. Xây dựng trình sinh tự động [`generate_complete_notebook.py`](generate_complete_notebook.py) tạo ra [`notebook.ipynb`](notebook.ipynb) đạt chuẩn 100% theo quy cách 4 repo tham khảo (LogR, KNN, HGB, K-Means):
      - **Tiêu đề lớn duy nhất** ở đầu notebook (`# DỰ ĐOÁN NGUY CƠ TRỄ HẠN BÀN GIAO ĐƠN HÀNG TRONG KHO E-LOGISTICS BẰNG THUẬT TOÁN DECISION TREE THUẦN NUMPY`).
      - **Đúng 21 mục tuần tự**, mỗi mục có tiêu đề dạng `## BƯỚC n: TÊN TIẾNG VIỆT (ENGLISH TERM)`.
      - **Cấu trúc 3 thành phần chuẩn mực cho mỗi bước:** (1) Markdown mở đầu (mục tiêu, lý do, công thức LaTeX $...$, 3–6 gạch đầu dòng), (2) Code cell thực thi (in số liệu có viền bảng `=` / `-`, vẽ hình đa panel chuẩn màu sắc và chú thích), (3) Markdown nhận xét thực nghiệm (phân tích số liệu cụ thể, không nói chung chung).
@@ -223,19 +223,19 @@
 
 ---
 
-### Cập Nhật Đồng Bộ Theo `HUONG_DAN_ANTIGRAVITY_CK10.md` Đã Điều Chỉnh
+### Cập Nhật Đồng Bộ Theo `tài liệu hướng dẫn đồ án` Đã Điều Chỉnh
 - **Thời gian:** 2026-11-02
 - **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10
 - **Nội dung thực hiện bởi AI:**
-  1. Đồng bộ hóa nội dung từ `HUONG_DAN_ANTIGRAVITY_CK10.md` sang `HUONG_DAN.md` tại gốc dự án.
+  1. Đồng bộ hóa nội dung từ `tài liệu hướng dẫn đồ án` sang `tài liệu hướng dẫn đồ án` tại gốc dự án.
   2. Rà soát chi tiết các điểm thay đổi:
      - Làm rõ yêu cầu loại bỏ Random Forest khỏi bảng mô hình chính (như đã chốt trong Mục 4.5 và sửa đề cương Word Mục 2.3).
      - Chuẩn hóa văn phong tự chủ của đồ án, lược bỏ các tham chiếu phụ thuộc bên ngoài.
   3. Cập nhật mã nguồn và tài liệu tương ứng:
-     - [`src/evaluate.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/evaluate.py): Gỡ bỏ việc huấn luyện và đánh giá Random Forest, đưa bảng so sánh No Free Lunch về đúng **7 mô hình chuẩn** (Dummy, FIFO, Slack, Seller History Rule, Tree Order Only, Logistic Regression, Decision Tree Core).
-     - [`src/statistical_analysis.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/statistical_analysis.py): Cập nhật vòng lặp `Iter 5` thành `Decision Tree + Triage Post-hoc` (khóa ngưỡng phân tầng $t_1/t_2$ và cờ Trưởng ca can thiệp).
-     - [`src/export_web.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/src/export_web.py): Xuất lại toàn bộ dữ liệu JSON cho web (`web/data/metrics.json` phản ánh chuẩn xác 7 mô hình và bảng lặp).
-     - [`README.md`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/README.md): Cập nhật bảng so sánh 7 mô hình và ghi rõ lý do không triển khai Random Forest (tập trung vào tính giải thích được XAI của Decision Tree).
+     - [`src/evaluate.py`](src/evaluate.py): Gỡ bỏ việc huấn luyện và đánh giá Random Forest, đưa bảng so sánh No Free Lunch về đúng **7 mô hình chuẩn** (Dummy, FIFO, Slack, Seller History Rule, Tree Order Only, Logistic Regression, Decision Tree Core).
+     - [`src/statistical_analysis.py`](src/statistical_analysis.py): Cập nhật vòng lặp `Iter 5` thành `Decision Tree + Triage Post-hoc` (khóa ngưỡng phân tầng $t_1/t_2$ và cờ Trưởng ca can thiệp).
+     - [`src/export_web.py`](src/export_web.py): Xuất lại toàn bộ dữ liệu JSON cho web (`web/data/metrics.json` phản ánh chuẩn xác 7 mô hình và bảng lặp).
+     - [`README.md`](README.md): Cập nhật bảng so sánh 7 mô hình và ghi rõ lý do không triển khai Random Forest (tập trung vào tính giải thích được XAI của Decision Tree).
   4. Thực thi kiểm định chất lượng:
      - Toàn bộ test suite `pytest tests/`: 30 passed, 1 skipped.
 - **Trạng thái:** Đồng bộ hoàn tất 100%.
@@ -246,7 +246,7 @@
 - **Thời gian:** 2026-11-02
 - **Người giám sát / Phê duyệt:** Nhóm sinh viên CK10 (Prompt chỉ định notebook phong cách báo cáo thực nghiệm đọc từ trên xuống)
 - **Nội dung thực hiện bởi AI:**
-  1. Xây dựng script biên tập chuyên biệt [`build_custom_notebook.py`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/build_custom_notebook.py) tạo ra [`notebook.ipynb`](file:///c:/Users/DELL/Downloads/ck%20e%20logistic/notebook.ipynb) chuyển từ 21 bước chia cứng sang **15 Mục báo cáo thực nghiệm logic, dẫn dắt tự nhiên từ trên xuống dưới**:
+  1. Xây dựng script biên tập chuyên biệt [`build_custom_notebook.py`](build_custom_notebook.py) tạo ra [`notebook.ipynb`](notebook.ipynb) chuyển từ 21 bước chia cứng sang **15 Mục báo cáo thực nghiệm logic, dẫn dắt tự nhiên từ trên xuống dưới**:
      - Tiêu đề đầu notebook + Tóm tắt điều hành (Executive Summary).
      - Mục I: Định nghĩa bài toán & Bản chất học máy trong E-Logistics (Bước 1, 2).
      - Mục II: Khám phá, Kiểm toán dữ liệu Olist & Lọc phễu Cohort (Bước 3, 4).

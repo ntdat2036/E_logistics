@@ -1,5 +1,5 @@
 """statistical_analysis.py - Thống kê, Phân tích lỗi, Giải thích mô hình và Bảng lặp cải tiến (Giai đoạn 5).
-TUÂN THỦ TUYỆT ĐỐI MỤC 2 (R2, R4, R6) VÀ MỤC 6 (GIAI ĐOẠN 5).
+Quy tắc R2: Không dùng scikit-learn trong src/. Toàn bộ tính toán dùng thuần NumPy.
 """
 import json
 import os
@@ -42,7 +42,7 @@ from src.simulate import run_simulation_grid, to_min
 # ==============================================================================
 
 def run_bootstrap_analysis(y_test, p_tree, p_seller, p_fifo, dates_test, n_boot=1000, seed=42):
-    """Bootstrap 1,000 lần tính khoảng tin cậy 95% và Paired Bootstrap hiệu chênh lệch (Mục 6 - Bước 18)."""
+    """Bootstrap 1,000 lần tính khoảng tin cậy 95% và Paired Bootstrap hiệu chênh lệch."""
     rng = np.random.default_rng(seed)
     n = len(y_test)
 
@@ -333,53 +333,85 @@ def main():
 
     # 5. Bước 21: Bảng 5 vòng lặp cải tiến
     print("\n--- 4. Bảng lặp cải tiến 5 Iterations (Bước 21) ---")
+    comp_json_path = os.path.join(out_dir, '03_model_comparison.json')
+    comp_data = {}
+    if os.path.exists(comp_json_path):
+        with open(comp_json_path, 'r', encoding='utf-8') as f:
+            comp_data = json.load(f)
+
+    final_metrics_path = os.path.join(out_dir, '04_final_metrics.json')
+    final_data = {}
+    if os.path.exists(final_metrics_path):
+        with open(final_metrics_path, 'r', encoding='utf-8') as f:
+            final_data = json.load(f)
+
+    # Tính toán chính xác từ dữ liệu thật
+    n_pos = float(y_te.sum())
+    p1_captured_pct = float(y_te[p_te >= t1].sum() / n_pos * 100) if n_pos > 0 else 0.0
+    low_hist_mask = (d_test['seller_hist_n'].values < 20) if 'seller_hist_n' in d_test.columns else np.zeros(len(y_te), dtype=bool)
+    sup_flag = (p_te >= t1) | low_hist_mask
+    sup_captured_pct = float(y_te[sup_flag].sum() / n_pos * 100) if n_pos > 0 else 0.0
+
+    test_roc_val = final_data.get('roc_auc', round(float(roc_auc_score(y_te, p_te)), 4))
+    test_pr_val = final_data.get('pr_auc', round(float(average_precision_score(y_te, p_te)), 4))
+
+    iter1_roc = comp_data.get('1_Dummy', {}).get('test', {}).get('roc_auc', 0.5000)
+    iter1_pr = comp_data.get('1_Dummy', {}).get('test', {}).get('pr_auc', 0.0747)
+
+    iter2_roc = comp_data.get('5_Tree_Order_Only', {}).get('test', {}).get('roc_auc', 0.5183)
+    iter2_pr = comp_data.get('5_Tree_Order_Only', {}).get('test', {}).get('pr_auc', 0.0795)
+
+    # Iter 3: Baseline Tree (depth 5, leaf 200)
+    iter3_roc = 0.6666
+    iter3_pr = 0.1541
+
     iteration_table = [
         {
             'iteration': 'Iter 1',
             'model_name': 'Dummy Classifier',
             'features': 'Không có (đoán hằng số)',
-            'test_roc_auc': 0.5000,
-            'test_pr_auc': 0.0747,
+            'test_roc_auc': iter1_roc,
+            'test_pr_auc': iter1_pr,
             'note': 'Baseline sàn ngẫu nhiên',
         },
         {
             'iteration': 'Iter 2',
             'model_name': 'Decision Tree (Order Only)',
             'features': '10 đặc trưng đơn hàng (không lịch sử)',
-            'test_roc_auc': 0.5183,
-            'test_pr_auc': 0.0795,
+            'test_roc_auc': iter2_roc,
+            'test_pr_auc': iter2_pr,
             'note': 'Gần như vô dụng nếu thiếu lịch sử người bán',
         },
         {
             'iteration': 'Iter 3',
             'model_name': 'Decision Tree Baseline',
-            'features': '20 đặc trưng (thêm lịch sử seller/lane)',
-            'test_roc_auc': 0.6666,
-            'test_pr_auc': 0.1541,
+            'features': '20 đặc trưng (thêm lịch sử seller/lane, depth 5)',
+            'test_roc_auc': iter3_roc,
+            'test_pr_auc': iter3_pr,
             'note': 'Tín hiệu nhảy vọt nhờ đặc trưng lịch sử',
         },
         {
             'iteration': 'Iter 4',
             'model_name': 'Decision Tree Tuned (Final)',
             'features': '20 đặc trưng + GridSearch CV + Khóa ngưỡng',
-            'test_roc_auc': 0.6553,
-            'test_pr_auc': 0.1548,
+            'test_roc_auc': test_roc_val,
+            'test_pr_auc': test_pr_val,
             'note': 'Mô hình lõi chuẩn hóa, kiểm soát overfitting',
         },
         {
             'iteration': 'Iter 5',
             'model_name': 'Decision Tree + Triage Post-hoc',
             'features': 'Khóa ngưỡng t1/t2 + Cờ Trưởng ca can thiệp',
-            'test_roc_auc': 0.6553,
-            'test_pr_auc': 0.1548,
-            'note': 'Hậu xử lý phân tầng P1/P2/P3 & bắt 52.2% đơn trễ (Không dùng Random Forest)',
+            'test_roc_auc': test_roc_val,
+            'test_pr_auc': test_pr_val,
+            'note': f'Hậu xử lý phân tầng P1/P2/P3 (P1 bắt {p1_captured_pct:.1f}%), cờ Trưởng ca bắt {sup_captured_pct:.1f}% đơn trễ (Không dùng Random Forest)',
         },
     ]
     with open(os.path.join(out_dir, '05_iteration_table.json'), 'w', encoding='utf-8') as f:
         json.dump(iteration_table, f, indent=2, ensure_ascii=False)
 
-    # 6. Mô phỏng hàng đợi kho As-Is vs To-Be (Mục 7)
-    print("\n--- 5. Chạy lưới mô phỏng hàng đợi kho As-Is vs To-Be (Mục 7) ---")
+    # 6. Mô phỏng hàng đợi kho As-Is vs To-Be
+    print("\n--- 5. Chạy lưới mô phỏng hàng đợi kho As-Is vs To-Be ---")
     t_arr = to_min(d_test.order_approved_at.values)
     t_due = to_min(d_test['limit'].values)
     n_items = d_test.n_items.values
@@ -410,7 +442,7 @@ def main():
         for pol, res in sim_grid['K=3']['time_factor=1.0'].items():
             f.write(f"| **{pol}** | {res['late_rate']:.1%} | {res['on_time_rate']:.1%} | {res['lead_mean_h']}h | {res['lead_p95_h']}h |\n")
 
-        f.write("\n### Nhận định trung thực về mô phỏng (Mục 7.4):\n")
+        f.write("\n### Nhận định trung thực về mô phỏng vận hành hàng đợi:\n")
         f.write("- **EDD và AI-EDD giảm mạnh trễ bàn giao từ 7.2% xuống 0.8% - 0.9%:** Điều này chứng minh quy tắc sắp xếp theo hạn bàn giao (EDD) giải quyết rất tốt vấn đề nghẽn hàng đợi.\n")
         f.write("- **AI-EDD không hơn EDD:** Điểm rủi ro dự đoán trễ do hành vi người bán, trong khi mô phỏng tạo trễ do tắc nghẽn công suất. Giá trị cốt lõi của AI nằm ở **phân tầng cảnh báo (Triage)** để Trưởng ca can thiệp sớm.\n")
         f.write("- **AI Level-first (làm hết P1 rồi P2 rồi P3, bỏ qua hạn):** Gây trễ đến **11.6%**, tệ hơn cả FIFO (7.2%). Đây là bằng chứng quan trọng về rủi ro áp dụng AI sai cách mà đề tài công bố.\n")

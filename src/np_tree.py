@@ -1,5 +1,6 @@
-"""np_tree.py - Cây quyết định phân loại nhị phân thuần NumPy (Pure NumPy Decision Tree).
-Dự án CK10 E-Logistics. Tuân thủ 100% nguyên tắc R2 (Không import sklearn).
+"""np_tree.py - Re-export module cho DecisionTree, BinMapper, Node từ src/model.py.
+Giữ lại module này làm alias độc lập để phục vụ quy ước gọi tên và import trực tiếp của bài toán CK10 E-logistics.
+Tuân thủ 100% nguyên tắc R2 (Không import scikit-learn).
 """
 import sys
 import os

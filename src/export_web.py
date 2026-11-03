@@ -1,6 +1,6 @@
-"""export_web.py - Xuất toàn bộ dữ liệu đã đo lường và tính toán sang web/data/*.json (Mục 8.2).
-TUÂN THỦ TUYỆT ĐỐI MỤC 2 (R4): Mọi số liệu trên Web phải đọc từ file outputs/ do code sinh ra, không hard-code.
-Không hiển thị bất kỳ ID khách hàng/người bán nào (ẩn danh theo Mục 8.1 & Mục 10).
+"""export_web.py - Xuất toàn bộ dữ liệu đã đo lường và tính toán sang web/data/*.json.
+Mọi số liệu trên Web đọc từ file outputs/ do code sinh ra, không hard-code.
+Không hiển thị bất kỳ ID khách hàng/người bán nào (ẩn danh bảo mật).
 """
 import json
 import os
@@ -162,7 +162,7 @@ def export_all_web_data(out_dir='web/data'):
     for num_id, idx in enumerate(chosen_indices, 1):
         row = d_test.iloc[idx]
         ord_id = str(row['order_id'])
-        # Ẩn danh: chỉ hiển thị mã rút gọn ORD-XXXXX (Mục 8.1 & 10)
+        # Ẩn danh: chỉ hiển thị mã rút gọn ORD-XXXXX bảo vệ tính riêng tư dữ liệu
         anon_id = f"ORD-{num_id:03d} ({ord_id[:6]}...)"
 
         p_risk = float(p_te[idx])
@@ -236,10 +236,10 @@ def export_all_web_data(out_dir='web/data'):
     for k in k_percents:
         top_k = int(np.ceil((k / 100.0) * n_te))
 
-        idx_tree = np.argsort(p_te)[::-1][:top_k]
-        idx_seller = np.argsort(p_seller)[::-1][:top_k]
-        idx_slack = np.argsort(p_slack)[::-1][:top_k]
-        idx_fifo = np.argsort(p_fifo)[::-1][:top_k]
+        idx_tree = np.argsort(-p_te, kind='stable')[:top_k]
+        idx_seller = np.argsort(-p_seller, kind='stable')[:top_k]
+        idx_slack = np.argsort(-p_slack, kind='stable')[:top_k]
+        idx_fifo = np.argsort(-p_fifo, kind='stable')[:top_k]
 
         triage_data.append({
             'top_percent': k,

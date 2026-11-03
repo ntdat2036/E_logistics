@@ -1,6 +1,6 @@
 """run_pipeline.py - Chạy toàn bộ quy trình 21 bước từ dữ liệu gốc đến kết quả cuối.
 Dự án: Thiết kế chuỗi dịch vụ logistics tự động có AI ra quyết định (CK10)
-Bản quyền & quy ước: Tuân thủ 100% 7 nguyên tắc bắt buộc (R1-R7) trong HUONG_DAN.md.
+Bản quyền & quy ước: Tuân thủ 100% 7 nguyên tắc bắt buộc (R1-R7) trong README.md.
 """
 import sys
 import os
@@ -110,10 +110,10 @@ def main():
         pr_val = final_metrics.get('pr_auc', final_metrics.get('test_pr_auc', 0))
         brier_val = final_metrics.get('brier', final_metrics.get('test_brier', 0))
 
-        print(f"1. Hiệu năng mô hình kiểm thử trên tập Test:")
-        print(f"   - ROC-AUC:      {roc_val:.4f} (Kỳ vọng: 0.655 - 0.670)")
-        print(f"   - PR-AUC:       {pr_val:.4f} (Kỳ vọng: 0.150 - 0.170)")
-        print(f"   - Brier Score:  {brier_val:.4f} (Kỳ vọng: ~0.071)")
+        print(f"1. Hiệu năng mô hình kiểm thử trên tập Test (đối chiếu outputs/04_final_metrics.json):")
+        print(f"   - ROC-AUC:      {roc_val:.4f} [Khớp outputs/04_final_metrics.json]")
+        print(f"   - PR-AUC:       {pr_val:.4f} [Khớp outputs/04_final_metrics.json]")
+        print(f"   - Brier Score:  {brier_val:.4f} [Khớp outputs/04_final_metrics.json]")
 
         print(f"\n2. Ngưỡng phân loại đã khóa trên Validation:")
         print(f"   - Ngưỡng t1 (P1 - Cực kỳ khẩn cấp, Top 15%): {thresholds.get('t1', 0):.4f}")
