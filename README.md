@@ -1,4 +1,4 @@
-# Đồ Án CK10: Thiết Kế Chuỗi Dịch Vụ Logistics Tự Động Có AI Ra Quyết Định
+# Thiết Kế Chuỗi Dịch Vụ Logistics Tự Động Có AI Ra Quyết Định
 ## Nghiệp Vụ Kho (Inventory) — Dự Đoán Nguy Cơ Trễ Bàn Giao Vận Tải
 
 **Môn học:** E-Logistics & Supply Chain Analytics (CK10)  
