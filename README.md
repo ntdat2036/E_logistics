@@ -4,8 +4,7 @@
 **Môn học:** E-Logistics & Supply Chain Analytics (CK10)  
 **Tập dữ liệu:** Brazilian E-Commerce by Olist (Kaggle `olistbr/brazilian-ecommerce`, Version 2)  
 **Thuật toán lõi:** Decision Tree phân tầng tự hiện thực bằng **NumPy thuần** (Không phụ thuộc `scikit-learn` trong mã nguồn sản phẩm)  
-**Sản phẩm hoàn chỉnh:** Mã nguồn Python (`src/`) + Báo cáo Jupyter Notebook (`notebook.ipynb`) + Website phân tích & mô phỏng tương tác 8 trang (`web/`)
-
+**Sản phẩm hoàn chỉnh:** Mã nguồn Python (`src/`) + Báo cáo Jupyter Notebook (`notebook.ipynb`) 
 ---
 
 ## 1. Tóm Tắt Đề Tài & Bài Toán Cốt Lõi
